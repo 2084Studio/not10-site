@@ -14,8 +14,10 @@ assets/css/style.css    all styles
 assets/js/main.js       all interactions (torn hero, timeline, showcase, trailer…)
 assets/covers/          web covers (480 / 1000 px WebP) for 7 languages
 assets/covers/original/ original cover files as supplied
-assets/img/             paper textures, share image, icons
-tools/build_assets.py   regenerates everything in assets/covers + assets/img
+assets/hero/            hero layers cut from the cover: red sheets, inner paper, torn-edge strip
+assets/img/             paper textures (from the cover), share image, icons
+tools/build_hero.py     cuts assets/hero + the paper textures out of the Chinese cover
+tools/build_assets.py   regenerates web covers, share image and icons
 CNAME                   custom domain for GitHub Pages
 ```
 
@@ -25,7 +27,9 @@ CNAME                   custom domain for GitHub Pages
 - **Trailers**: YouTube IDs live in the `data-video` attributes in the Trailer section of each page
   (中文 `SN9qZIcayBk`, English `TMs_cJ2ucQ0`).
 - **Covers**: replace a file in `assets/covers/original/` (keep the `cover-<lang>` name), then run
-  `pip install pillow numpy && python3 tools/build_assets.py`.
+  `pip install pillow numpy scipy && python3 tools/build_assets.py`. If the cover art itself changes,
+  also run `python3 tools/build_hero.py` and copy the geometry it prints into `ART` in `assets/js/main.js`.
+- **Author page**: links to https://beijing.2084studio.com/ (hero author name and the contact section).
 - **Edition status** (即將出版 / 陸續推出 / Coming soon / Forthcoming): the `data-status` attribute on each
   button in the Editions section.
 

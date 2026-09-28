@@ -7,152 +7,168 @@
   const lerp = (a, b, t) => a + (b - a) * t;
   const smoothstep = (a, b, v) => { const t = clamp((v - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
   const easeInOut = t => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-  const easeOutExpo = t => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t));
-
-  // Seeded RNG so the tear has the same shape on every visit.
-  function mulberry32(seed) {
-    return () => {
-      seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
-      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-
-  // Smooth 1-D noise in [-1, 1]: random control points, cosine-interpolated.
-  function smoothNoise(len, step, rand) {
-    const ctrl = Array.from({ length: Math.ceil(len / step) + 2 }, () => rand() * 2 - 1);
-    return Array.from({ length: len }, (_, i) => {
-      const k = Math.floor(i / step), f = (i % step) / step;
-      const m = (1 - Math.cos(f * Math.PI)) / 2;
-      return ctrl[k] * (1 - m) + ctrl[k + 1] * m;
-    });
-  }
+  const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
 
   /* ------------------------------------------------------------
-     Hero: two sheets of red paper, torn apart
+     Hero: the cover's own red paper, pulled apart.
+     Artwork geometry, normalised (printed by tools/build_hero.py):
+     gapL/gapR  the open tear at the title line (the middle word sits inside),
+     sideL/sideR how far the torn edges reach over the title rows (side words stay outside),
+     maxL/minR  the edges' extremes over the whole height.
      ------------------------------------------------------------ */
+  const ART = { w: 1717, h: 2576, gapL: .4578, gapR: .636, sideL: .4356, sideR: .6552, maxL: .5125, minR: .5469 };
+  ART.gapC = (ART.gapL + ART.gapR) / 2;
+
   function initHero() {
     const hero = document.querySelector('[data-hero]');
     if (!hero) return null;
     const stage = hero.querySelector('.hero__stage');
-    const left = hero.querySelector('[data-panel="left"]');
-    const right = hero.querySelector('[data-panel="right"]');
-    const lFace = left.querySelector('.face'), lRim = left.querySelector('.rim');
-    const rFace = right.querySelector('.face'), rRim = right.querySelector('.rim');
-    const mid = hero.querySelector('.hero__mid');
-    const sideL = hero.querySelector('.hero__side--left');
-    const sideR = hero.querySelector('.hero__side--right');
+    const left = hero.querySelector('[data-sheet="left"]');
+    const right = hero.querySelector('[data-sheet="right"]');
+    const base = hero.querySelector('.hero__base');
+    const title = hero.querySelector('.hero__title');
     const cue = hero.querySelector('.hero__cue');
+    const ty = parseFloat(title.dataset.ty) || .44;
+    const words = [...title.querySelectorAll('.hero__word')].map(el => ({
+      el,
+      side: el.dataset.side,
+      anchor: el.dataset.anchor || 'center',
+      x: parseFloat(el.dataset.x),
+      fs: parseFloat(el.style.getPropertyValue('--fs'))
+    }));
 
-    const N = 150;
-    const rand = mulberry32(1966);
-    const wander = smoothNoise(N + 1, 38, rand);
-    const wobL = smoothNoise(N + 1, 9, rand), wobR = smoothNoise(N + 1, 9, rand);
-    const bumpL = smoothNoise(N + 1, 26, rand), bumpR = smoothNoise(N + 1, 26, rand);
-    const jitL = Array.from({ length: N + 1 }, rand), jitR = Array.from({ length: N + 1 }, rand);
-    const rimL = Array.from({ length: N + 1 }, rand), rimR = Array.from({ length: N + 1 }, rand);
+    let vw = 0, vh = 0, g = null;
+    let closed = reduceMotion ? 0 : 1;   // 1: sheets pushed together, 0: as printed on the cover
+    let p = 0;                            // scroll progress through the hero
 
-    let W = 0, H = 0, titleY = .5, midHalf = 40, open = reduceMotion ? 1 : 0;
-
-    function measure() {
-      W = stage.clientWidth; H = stage.clientHeight;
-      const s = stage.getBoundingClientRect(), m = mid.getBoundingClientRect();
-      titleY = clamp((m.top + m.height / 2 - s.top) / H, .2, .8);
-      midHalf = m.width / 2;
+    // Size every layer like `background-size: cover`, keeping the title line
+    // mid-screen and, when the art is wider than the screen, the tear centred.
+    function layout() {
+      vw = stage.clientWidth; vh = stage.clientHeight;
+      const s = Math.max(vw / ART.w, vh / ART.h);
+      const rw = ART.w * s, rh = ART.h * s;
+      const ox = clamp(vw / 2 - ART.gapC * rw, vw - rw, 0);
+      const oy = clamp(vh / 2 - ty * rh, vh - rh, 0);
+      const X = n => ox + n * rw;
+      stage.style.setProperty('--art-size', `${rw.toFixed(1)}px ${rh.toFixed(1)}px`);
+      stage.style.setProperty('--art-pos', `${ox.toFixed(1)}px ${oy.toFixed(1)}px`);
+      stage.style.setProperty('--cue-x', `${X(ART.gapC).toFixed(1)}px`);
+      g = {
+        rw, rh, X, y: oy + ty * rh,
+        gapL: X(ART.gapL), gapR: X(ART.gapR),
+        sideL: X(ART.sideL), sideR: X(ART.sideR),
+        outL: X(ART.maxL) + 60, outR: vw - X(ART.minR) + 60,
+        close: (ART.gapR - ART.gapL) / 2 * rw + 4
+      };
+      placeTitle();
+      apply();
     }
 
-    function draw() {
-      const base = Math.max(W * .016, 7);
-      const bulge = Math.max(W * .085, midHalf + 6 - base);
-      const sigma = .15;
-      const teeth = clamp(W * .006, 3, 8) * (.35 + .65 * open);
-      const wob = W * .012 * open;
-      const lf = [], lr = [], rf = [], rr = [];
-      for (let i = 0; i <= N; i++) {
-        const t = i / N, y = (t * (H + 8) - 4).toFixed(1);
-        const g = Math.exp(-((t - titleY) ** 2) / (2 * sigma * sigma));
-        // widen a little near the bottom too, like the printed cover
-        const g2 = Math.exp(-((t - .9) ** 2) / (2 * .06 * .06)) * .25;
-        const hw = (base + bulge * g + bulge * g2) * open;
-        const cx = W / 2 + W * .03 * wander[i] * (1 - g);
-        const xl = cx - hw - Math.max(0, bumpL[i]) * wob - wobL[i] * wob * .35 - jitL[i] * teeth;
-        const xr = cx + hw + Math.max(0, bumpR[i]) * wob + wobR[i] * wob * .35 + jitR[i] * teeth;
-        const rimW = .6 + open * 1.4;
-        lf.push(`${xl.toFixed(1)}px ${y}px`);
-        lr.push(`${(xl + (1.5 + rimL[i] * 4.5) * rimW).toFixed(1)}px ${y}px`);
-        rf.push(`${xr.toFixed(1)}px ${y}px`);
-        rr.push(`${(xr - (1.5 + rimR[i] * 4.5) * rimW).toFixed(1)}px ${y}px`);
+    // Set the title exactly where the cover prints it; on narrow screens, where the
+    // outer letters would fall off-screen, shrink it to fit either side of the tear.
+    function placeTitle() {
+      const pad = Math.max(14, vw * .035);
+      const room = Math.max(12, g.rw * .02);
+      const size = k => words.forEach(w => { w.el.style.fontSize = `${(w.fs * g.rh * k).toFixed(2)}px`; });
+      const measure = () => words.forEach(w => { w.w = w.el.offsetWidth; w.h = w.el.offsetHeight; });
+      const at = (w, x) => (w.anchor === 'right' ? x - w.w : w.anchor === 'left' ? x : x - w.w / 2);
+      const inside = (w, a, b) => w.left >= a && w.left + w.w <= b;
+      const group = side => words.filter(w => w.side === side);
+
+      size(1); measure();
+      words.forEach(w => { w.left = at(w, g.X(w.x)); });
+      const fits = words.every(w =>
+        w.side === 'left' ? inside(w, pad, g.sideL - room)
+          : w.side === 'right' ? inside(w, g.sideR + room, vw - pad)
+            : inside(w, g.gapL, g.gapR));
+
+      if (!fits) {
+        const need = side => group(side).reduce((a, w) => a + w.w, 0) * (group(side).length > 1 ? 1.5 : 1);
+        const k = Math.min(1,
+          (g.sideL - room - pad) / need('left'),
+          (vw - pad - g.sideR - room) / need('right'),
+          (g.gapR - g.gapL - 12) / need('mid'));
+        size(k); measure();
+        spread(group('left'), pad, g.sideL - room);
+        spread(group('right'), g.sideR + room, vw - pad);
+        group('mid').forEach(w => { w.left = clamp(g.X(w.x) - w.w / 2, g.gapL, g.gapR - w.w); });
       }
-      const L0 = '-40px -40px', L1 = `-40px ${H + 40}px`;
-      const R0 = `${W + 40}px -40px`, R1 = `${W + 40}px ${H + 40}px`;
-      lFace.style.clipPath = `polygon(${L0},${lf.join(',')},${L1})`;
-      lRim.style.clipPath = `polygon(${L0},${lr.join(',')},${L1})`;
-      rFace.style.clipPath = `polygon(${R0},${rf.join(',')},${R1})`;
-      rRim.style.clipPath = `polygon(${R0},${rr.join(',')},${R1})`;
+      words.forEach(w => {
+        w.el.style.left = `${w.left.toFixed(1)}px`;
+        w.el.style.top = `${(g.y - w.h / 2).toFixed(1)}px`;
+      });
+    }
+
+    function spread(list, a, b) {
+      if (list.length === 1) {
+        const w = list[0];
+        w.left = w.anchor === 'right' ? b - w.w : w.anchor === 'left' ? a : (a + b - w.w) / 2;
+        return;
+      }
+      const gap = (b - a - list.reduce((sum, w) => sum + w.w, 0)) / list.length;
+      let x = a + gap / 2;
+      list.forEach(w => { w.left = x; x += w.w + gap; });
+    }
+
+    function apply() {
+      const e = easeInOut(p);
+      const dxL = closed * g.close - e * g.outL;
+      const dxR = -closed * g.close + e * g.outR;
+      left.style.transform = `translate3d(${dxL.toFixed(1)}px,0,0)`;
+      right.style.transform = `translate3d(${dxR.toFixed(1)}px,0,0)`;
+      words.forEach(w => {
+        if (w.side === 'left') w.el.style.transform = `translate3d(${dxL.toFixed(1)}px,0,0)`;
+        else if (w.side === 'right') w.el.style.transform = `translate3d(${dxR.toFixed(1)}px,0,0)`;
+        else {
+          w.el.style.transform = `scale(${(1 + e * .3).toFixed(3)})`;
+          w.el.style.opacity = String(1 - smoothstep(.45, .85, p));
+        }
+      });
+      // the cover's own inner paper (with its shadows) gives way to the plain
+      // section paper as soon as the sheets start to move
+      base.style.opacity = String(1 - smoothstep(.02, .2, p));
+      cue.style.opacity = String(1 - smoothstep(0, .06, p));
+    }
+
+    function progress() {
+      return clamp(-hero.getBoundingClientRect().top / Math.max(hero.offsetHeight - vh, 1), 0, 1);
     }
 
     function onScroll() {
       if (reduceMotion) return;
-      const range = hero.offsetHeight - H;
-      const p = clamp(-hero.getBoundingClientRect().top / Math.max(range, 1), 0, 1);
-      const e = easeInOut(p);
-      const dx = e * W * .6;
-      left.style.transform = `translate3d(${-dx}px,0,0)`;
-      right.style.transform = `translate3d(${dx}px,0,0)`;
-      sideL.style.transform = `translate3d(${-dx}px,0,0)`;
-      sideR.style.transform = `translate3d(${dx}px,0,0)`;
-      mid.style.opacity = String(1 - smoothstep(.55, .92, p));
-      mid.style.transform = `scale(${1 + e * .25})`;
-      cue.style.opacity = String(1 - smoothstep(0, .08, p));
-      return p;
+      p = progress();
+      apply();
     }
 
-    function intro() {
+    function open() {
       hero.classList.add('is-ready');
-      if (reduceMotion) { draw(); hero.classList.add('is-open'); return; }
-      const start = performance.now() + 250, dur = 1900;
-      let opened = false;
+      if (reduceMotion) { closed = 0; apply(); hero.classList.add('is-open'); return; }
+      const start = performance.now() + 250, dur = 1700;
+      let shown = false;
       const tick = now => {
         const t = clamp((now - start) / dur, 0, 1);
-        open = easeOutExpo(t);
-        draw();
-        if (!opened && t > .32) { opened = true; hero.classList.add('is-open'); }
+        closed = 1 - easeOutCubic(t);
+        apply();
+        if (!shown && t > .3) { shown = true; hero.classList.add('is-open'); }
         if (t < 1) requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
     }
 
-    measure(); draw();
-    const fontsReady = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
-    Promise.race([fontsReady, new Promise(r => setTimeout(r, 1500))]).then(() => { measure(); intro(); });
-
-    return {
-      resize() { measure(); draw(); onScroll(); },
-      scroll: onScroll,
-      progress() { return clamp(-hero.getBoundingClientRect().top / Math.max(hero.offsetHeight - H, 1), 0, 1); }
-    };
-  }
-
-  /* ------------------------------------------------------------
-     Torn edges between sections
-     ------------------------------------------------------------ */
-  function initTearEdges() {
-    document.querySelectorAll('.tear-edge').forEach((edge, idx) => {
-      const rand = mulberry32(1976 + idx * 97);
-      const n = 120, h = edge.offsetHeight || 30;
-      const coarse = smoothNoise(n + 1, 7, rand);
-      const a = ['0% 100%'], b = ['0% 100%'];
-      for (let i = 0; i <= n; i++) {
-        const x = (i / n * 100).toFixed(2) + '%';
-        const y = clamp(h * .55 + coarse[i] * h * .28 + (rand() - .5) * h * .3, 3, h - 1);
-        a.push(`${x} ${y.toFixed(1)}px`);
-        b.push(`${x} ${Math.max(0, y - 1.5 - rand() * 3.5).toFixed(1)}px`);
-      }
-      a.push('100% 100%'); b.push('100% 100%');
-      edge.style.setProperty('--tear', `polygon(${a.join(',')})`);
-      edge.style.setProperty('--tear-rim', `polygon(${b.join(',')})`);
+    // wait for the artwork and the title font before tearing it open
+    const art = [base, left, right].map(el => {
+      const m = /url\(["']?(.*?)["']?\)/.exec(getComputedStyle(el).backgroundImage);
+      if (!m) return Promise.resolve();
+      const img = new Image();
+      img.src = m[1];
+      return img.decode ? img.decode().catch(() => {}) : new Promise(r => { img.onload = img.onerror = r; });
     });
+    const fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+    layout();
+    Promise.race([Promise.all([...art, fonts]), new Promise(r => setTimeout(r, 3500))])
+      .then(() => { layout(); open(); });
+
+    return { resize: layout, scroll: onScroll, progress };
   }
 
   /* ------------------------------------------------------------
@@ -457,7 +473,6 @@
   const header = document.querySelector('[data-header]');
   const bar = document.querySelector('.progress');
   const hero = initHero();
-  initTearEdges();
   initReveal();
   const timeline = initTimeline();
   initTilt();

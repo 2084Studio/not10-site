@@ -6,7 +6,7 @@
 <title>文革非十年 · Not Ten Years: The Cultural Revolution｜北靜 著</title>
 <meta name="description" content="《文革非十年》（Not Ten Years: The Cultural Revolution），北靜著。文化大革命真的只有十年嗎？本書追問：這樣一場革命，為什麼會成為可能？即將出版，並將陸續推出七種語言版本。">
 <meta name="author" content="北靜 Bei.Jing">
-<meta name="theme-color" content="#9e1015">
+<meta name="theme-color" content="#7d0305">
 <link rel="canonical" href="https://culturalrevolution.2084studio.com/">
 <link rel="alternate" hreflang="zh-Hant" href="https://culturalrevolution.2084studio.com/">
 <link rel="alternate" hreflang="en" href="https://culturalrevolution.2084studio.com/en/">
@@ -28,9 +28,15 @@
 <link rel="icon" href="assets/img/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 
+<link rel="preload" as="image" href="assets/hero/sheet-left-1717.webp" media="(min-width: 761px)">
+<link rel="preload" as="image" href="assets/hero/sheet-left-1100.webp" media="(max-width: 760px)">
+<link rel="preload" as="image" href="assets/hero/sheet-right-1717.webp" media="(min-width: 761px)">
+<link rel="preload" as="image" href="assets/hero/sheet-right-1100.webp" media="(max-width: 760px)">
+<link rel="preload" as="image" href="assets/hero/base-1717.webp" media="(min-width: 761px)">
+<link rel="preload" as="image" href="assets/hero/base-1100.webp" media="(max-width: 760px)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Serif+TC:wght@400;600;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Serif+TC:wght@400;600;700;900&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
 <script>document.documentElement.classList.add('js')</script>
 <script src="assets/js/main.js" defer></script>
@@ -41,7 +47,7 @@
   "@type": "Book",
   "name": "文革非十年",
   "alternateName": "Not Ten Years: The Cultural Revolution",
-  "author": { "@type": "Person", "name": "北靜", "alternateName": "Bei.Jing" },
+  "author": { "@type": "Person", "name": "北靜", "alternateName": "Bei.Jing", "url": "https://beijing.2084studio.com/" },
   "inLanguage": ["zh-Hant", "en", "es", "fr", "de", "ja", "ko"],
   "image": "https://culturalrevolution.2084studio.com/assets/covers/cover-zh-1000.webp",
   "url": "https://culturalrevolution.2084studio.com/",
@@ -69,19 +75,20 @@
   <!-- 1 · 封面：撕開的紅紙 -->
   <section class="hero" id="top" data-hero>
     <div class="hero__stage">
-      <div class="hero__gap" aria-hidden="true"></div>
-      <div class="hero__panel hero__panel--left" data-panel="left">
-        <div class="rim"></div><div class="face"></div>
+      <div class="hero__paper" aria-hidden="true"></div>
+      <div class="hero__layer hero__base" aria-hidden="true"></div>
+      <div class="hero__layer hero__sheet hero__sheet--left" data-sheet="left">
         <p class="hero__meta hero__meta--left" lang="en">Not Ten Years:<br> The Cultural Revolution</p>
       </div>
-      <div class="hero__panel hero__panel--right" data-panel="right">
-        <div class="rim"></div><div class="face"></div>
-        <p class="hero__meta hero__meta--right">北靜 著</p>
+      <div class="hero__layer hero__sheet hero__sheet--right" data-sheet="right">
+        <a class="hero__meta hero__meta--right" href="https://beijing.2084studio.com/">北靜 著</a>
       </div>
-      <h1 class="hero__title hero__title--zh">
-        <span class="hero__side hero__side--left"><span class="ch" style="--d:.05s">文</span><span class="ch" style="--d:.15s">革</span></span>
-        <span class="hero__mid"><span class="ch" style="--d:.45s">非</span></span>
-        <span class="hero__side hero__side--right"><span class="ch" style="--d:.25s">十</span><span class="ch" style="--d:.35s">年</span></span>
+      <h1 class="hero__title hero__title--zh" data-ty="0.4381">
+        <span class="hero__word" data-side="left" data-x="0.1319" style="--x:.1319;--fs:.0707;--d:.05s"><span class="ch">文</span></span>
+        <span class="hero__word" data-side="left" data-x="0.3290" style="--x:.329;--fs:.0707;--d:.15s"><span class="ch">革</span></span>
+        <span class="hero__word hero__word--mid" data-side="mid" data-x="0.5302" style="--x:.5302;--fs:.0707;--d:.55s"><span class="ch">非</span></span>
+        <span class="hero__word" data-side="right" data-x="0.7225" style="--x:.7225;--fs:.0707;--d:.25s"><span class="ch">十</span></span>
+        <span class="hero__word" data-side="right" data-x="0.8876" style="--x:.8876;--fs:.0707;--d:.35s"><span class="ch">年</span></span>
       </h1>
       <div class="hero__cue" aria-hidden="true"><span></span></div>
     </div>
@@ -124,7 +131,8 @@
 
   <!-- 3 · 關於本書 -->
   <section class="book bg-red has-tear" id="book">
-    <div class="tear-edge" aria-hidden="true"><b></b><i></i></div>
+    <div class="tear-edge tear-edge--top" aria-hidden="true"></div>
+    <div class="tear-edge tear-edge--bottom" aria-hidden="true"></div>
     <div class="wrap book__grid">
       <div class="book__visual reveal" data-tilt>
         <div class="book3d">
@@ -162,8 +170,7 @@
   </section>
 
   <!-- 4 · 本書關心 -->
-  <section class="concerns bg-cream has-tear" id="concerns">
-    <div class="tear-edge" aria-hidden="true"><b></b><i></i></div>
+  <section class="concerns bg-cream" id="concerns">
     <div class="wrap">
       <p class="eyebrow reveal">本書關心</p>
       <h2 class="display display--sm reveal">不只是誰發動了文化大革命、<br>誰成為受害者。</h2>
@@ -178,7 +185,8 @@
 
   <!-- 5 · 街道與大字報 -->
   <section class="street bg-red has-tear" id="street">
-    <div class="tear-edge" aria-hidden="true"><b></b><i></i></div>
+    <div class="tear-edge tear-edge--top" aria-hidden="true"></div>
+    <div class="tear-edge tear-edge--bottom" aria-hidden="true"></div>
     <div class="wrap">
       <h2 class="display reveal">歷史不只發生在中南海。</h2>
       <p class="street__line reveal" style="--d:.15s">
@@ -195,8 +203,7 @@
   </section>
 
   <!-- 6 · 宣傳片 -->
-  <section class="trailer bg-night has-tear" id="trailer">
-    <div class="tear-edge" aria-hidden="true"><b></b><i></i></div>
+  <section class="trailer bg-night" id="trailer">
     <div class="wrap">
       <div class="trailer__head">
         <div>
@@ -220,8 +227,7 @@
   </section>
 
   <!-- 7 · 七種語言 -->
-  <section class="editions bg-cream has-tear" id="editions">
-    <div class="tear-edge" aria-hidden="true"><b></b><i></i></div>
+  <section class="editions bg-cream" id="editions">
     <div class="wrap">
       <p class="eyebrow reveal">七種語言</p>
       <h2 class="display reveal-lines"><span class="ln"><span>同一個問題，</span></span><span class="ln"><span>七種語言。</span></span></h2>
@@ -253,7 +259,8 @@
 
   <!-- 8 · 結語 -->
   <section class="closing bg-red has-tear" id="closing">
-    <div class="tear-edge" aria-hidden="true"><b></b><i></i></div>
+    <div class="tear-edge tear-edge--top" aria-hidden="true"></div>
+    <div class="tear-edge tear-edge--bottom" aria-hidden="true"></div>
     <div class="wrap closing__inner">
       <p class="closing__pre reveal">這不是一本試圖替歷史提供簡單答案的書。</p>
       <p class="display closing__big reveal-lines"><span class="ln"><span>它試圖重新打開那些</span></span><span class="ln"><span>被「十年文革」四個字</span></span><span class="ln"><span>壓縮了太久的問題。</span></span></p>
@@ -263,8 +270,7 @@
   </section>
 
   <!-- 9 · 聯絡 -->
-  <section class="contact bg-cream has-tear" id="contact">
-    <div class="tear-edge" aria-hidden="true"><b></b><i></i></div>
+  <section class="contact bg-cream" id="contact">
     <div class="wrap">
       <p class="eyebrow reveal">聯絡</p>
       <h2 class="display display--sm reveal">出版及媒體聯絡</h2>
@@ -272,7 +278,7 @@
       <p class="reveal"><button class="copy" type="button" data-copy="2084Studio@gmail.com" data-done="已複製">複製電郵地址</button></p>
       <dl class="contact__meta reveal">
         <div><dt>書名</dt><dd>文革非十年<br><span lang="en">Not Ten Years: The Cultural Revolution</span></dd></div>
-        <div><dt>作者</dt><dd>北靜（<span lang="en">Bei.Jing</span>）</dd></div>
+        <div><dt>作者</dt><dd><a class="author-link" href="https://beijing.2084studio.com/"><span>北靜（<span lang="en">Bei.Jing</span>）</span><span class="author-link__go">作者主頁 <span aria-hidden="true">→</span></span></a></dd></div>
       </dl>
     </div>
   </section>

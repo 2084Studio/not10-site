@@ -6,7 +6,7 @@
 <title>Not Ten Years: The Cultural Revolution · by Bei.Jing</title>
 <meta name="description" content="Not Ten Years: The Cultural Revolution by Bei.Jing. Was the Cultural Revolution really only ten years long? A book that asks how such a revolution became possible. Coming soon, in seven languages.">
 <meta name="author" content="Bei.Jing">
-<meta name="theme-color" content="#9e1015">
+<meta name="theme-color" content="#7d0305">
 <link rel="canonical" href="https://culturalrevolution.2084studio.com/en/">
 <link rel="alternate" hreflang="zh-Hant" href="https://culturalrevolution.2084studio.com/">
 <link rel="alternate" hreflang="en" href="https://culturalrevolution.2084studio.com/en/">
@@ -28,9 +28,15 @@
 <link rel="icon" href="../assets/img/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
 
+<link rel="preload" as="image" href="../assets/hero/sheet-left-1717.webp" media="(min-width: 761px)">
+<link rel="preload" as="image" href="../assets/hero/sheet-left-1100.webp" media="(max-width: 760px)">
+<link rel="preload" as="image" href="../assets/hero/sheet-right-1717.webp" media="(min-width: 761px)">
+<link rel="preload" as="image" href="../assets/hero/sheet-right-1100.webp" media="(max-width: 760px)">
+<link rel="preload" as="image" href="../assets/hero/base-1717.webp" media="(min-width: 761px)">
+<link rel="preload" as="image" href="../assets/hero/base-1100.webp" media="(max-width: 760px)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Serif+TC:wght@400;600;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Serif+TC:wght@400;600;900&family=Tinos&display=swap">
 <link rel="stylesheet" href="../assets/css/style.css">
 <script>document.documentElement.classList.add('js')</script>
 <script src="../assets/js/main.js" defer></script>
@@ -41,7 +47,7 @@
   "@type": "Book",
   "name": "Not Ten Years: The Cultural Revolution",
   "alternateName": "文革非十年",
-  "author": { "@type": "Person", "name": "Bei.Jing", "alternateName": "北靜" },
+  "author": { "@type": "Person", "name": "Bei.Jing", "alternateName": "北靜", "url": "https://beijing.2084studio.com/" },
   "inLanguage": ["zh-Hant", "en", "es", "fr", "de", "ja", "ko"],
   "image": "https://culturalrevolution.2084studio.com/assets/covers/cover-en-1000.webp",
   "url": "https://culturalrevolution.2084studio.com/en/",
@@ -69,19 +75,18 @@
   <!-- 1 · Hero: the torn cover -->
   <section class="hero" id="top" data-hero>
     <div class="hero__stage">
-      <div class="hero__gap" aria-hidden="true"></div>
-      <div class="hero__panel hero__panel--left" data-panel="left">
-        <div class="rim"></div><div class="face"></div>
+      <div class="hero__paper" aria-hidden="true"></div>
+      <div class="hero__layer hero__base" aria-hidden="true"></div>
+      <div class="hero__layer hero__sheet hero__sheet--left" data-sheet="left">
         <p class="hero__meta hero__meta--left" lang="zh-Hant">文革非十年</p>
       </div>
-      <div class="hero__panel hero__panel--right" data-panel="right">
-        <div class="rim"></div><div class="face"></div>
-        <p class="hero__meta hero__meta--right">Bei.Jing</p>
+      <div class="hero__layer hero__sheet hero__sheet--right" data-sheet="right">
+        <a class="hero__meta hero__meta--right" href="https://beijing.2084studio.com/">Bei.Jing</a>
       </div>
-      <h1 class="hero__title hero__title--en" aria-label="Not Ten Years: The Cultural Revolution">
-        <span class="hero__side hero__side--left" aria-hidden="true"><span class="ch" style="--d:.05s">The<br>Cultural<br>Revolution</span></span>
-        <span class="hero__mid" aria-hidden="true"><span class="ch" style="--d:.4s">NOT</span></span>
-        <span class="hero__side hero__side--right" aria-hidden="true"><span class="ch" style="--d:.2s">TEN<br>YEARS</span></span>
+      <h1 class="hero__title hero__title--en" data-ty="0.447" aria-label="Not Ten Years: The Cultural Revolution">
+        <span class="hero__word hero__word--small" data-side="left" data-anchor="right" data-x="0.3555" aria-hidden="true" style="--x:.3555;--fs:.0246;--d:.05s"><span class="ch">The<br>Cultural<br>Revolution</span></span>
+        <span class="hero__word hero__word--mid" data-side="mid" data-x="0.5435" aria-hidden="true" style="--x:.5435;--fs:.046;--d:.5s"><span class="ch">NOT</span></span>
+        <span class="hero__word hero__word--big" data-side="right" data-anchor="left" data-x="0.7061" aria-hidden="true" style="--x:.7061;--fs:.0472;--d:.25s"><span class="ch">TEN<br>YEARS</span></span>
       </h1>
       <div class="hero__cue" aria-hidden="true"><span></span></div>
     </div>
@@ -124,7 +129,8 @@
 
   <!-- 3 · The book -->
   <section class="book bg-red has-tear" id="book">
-    <div class="tear-edge" aria-hidden="true"><b></b><i></i></div>
+    <div class="tear-edge tear-edge--top" aria-hidden="true"></div>
+    <div class="tear-edge tear-edge--bottom" aria-hidden="true"></div>
     <div class="wrap book__grid">
       <div class="book__visual reveal" data-tilt>
         <div class="book3d">
@@ -162,8 +168,7 @@
   </section>
 
   <!-- 4 · Concerns -->
-  <section class="concerns bg-cream has-tear" id="concerns">
-    <div class="tear-edge" aria-hidden="true"><b></b><i></i></div>
+  <section class="concerns bg-cream" id="concerns">
     <div class="wrap">
       <p class="eyebrow reveal">What the book asks</p>
       <h2 class="display display--sm reveal">Not only who launched the Cultural Revolution, or who suffered under it.</h2>
@@ -178,7 +183,8 @@
 
   <!-- 5 · Street & posters -->
   <section class="street bg-red has-tear" id="street">
-    <div class="tear-edge" aria-hidden="true"><b></b><i></i></div>
+    <div class="tear-edge tear-edge--top" aria-hidden="true"></div>
+    <div class="tear-edge tear-edge--bottom" aria-hidden="true"></div>
     <div class="wrap">
       <h2 class="display reveal">History does not take place only inside Zhongnanhai.</h2>
       <p class="street__line reveal" style="--d:.15s">
@@ -195,8 +201,7 @@
   </section>
 
   <!-- 6 · Trailer -->
-  <section class="trailer bg-night has-tear" id="trailer">
-    <div class="tear-edge" aria-hidden="true"><b></b><i></i></div>
+  <section class="trailer bg-night" id="trailer">
     <div class="wrap">
       <div class="trailer__head">
         <div>
@@ -220,8 +225,7 @@
   </section>
 
   <!-- 7 · Editions -->
-  <section class="editions bg-cream has-tear" id="editions">
-    <div class="tear-edge" aria-hidden="true"><b></b><i></i></div>
+  <section class="editions bg-cream" id="editions">
     <div class="wrap">
       <p class="eyebrow reveal">Seven languages</p>
       <h2 class="display reveal-lines"><span class="ln"><span>One question,</span></span><span class="ln"><span>seven languages.</span></span></h2>
@@ -253,7 +257,8 @@
 
   <!-- 8 · Closing -->
   <section class="closing bg-red has-tear" id="closing">
-    <div class="tear-edge" aria-hidden="true"><b></b><i></i></div>
+    <div class="tear-edge tear-edge--top" aria-hidden="true"></div>
+    <div class="tear-edge tear-edge--bottom" aria-hidden="true"></div>
     <div class="wrap closing__inner">
       <p class="closing__pre reveal">This book does not offer a simple answer to the Cultural Revolution.</p>
       <p class="display closing__big reveal-lines"><span class="ln"><span>It reopens questions too often</span></span><span class="ln"><span>compressed into the phrase</span></span><span class="ln"><span>“the ten-year Cultural Revolution.”</span></span></p>
@@ -263,8 +268,7 @@
   </section>
 
   <!-- 9 · Contact -->
-  <section class="contact bg-cream has-tear" id="contact">
-    <div class="tear-edge" aria-hidden="true"><b></b><i></i></div>
+  <section class="contact bg-cream" id="contact">
     <div class="wrap">
       <p class="eyebrow reveal">Contact</p>
       <h2 class="display display--sm reveal">Publishing, media &amp; review inquiries</h2>
@@ -272,7 +276,7 @@
       <p class="reveal"><button class="copy" type="button" data-copy="2084Studio@gmail.com" data-done="Copied">Copy email address</button></p>
       <dl class="contact__meta reveal">
         <div><dt>Title</dt><dd><em>Not Ten Years: The Cultural Revolution</em><br><span lang="zh-Hant">文革非十年</span></dd></div>
-        <div><dt>Author</dt><dd>Bei.Jing (<span lang="zh-Hant">北靜</span>)</dd></div>
+        <div><dt>Author</dt><dd><a class="author-link" href="https://beijing.2084studio.com/"><span>Bei.Jing (<span lang="zh-Hant">北靜</span>)</span><span class="author-link__go">Author’s website <span aria-hidden="true">→</span></span></a></dd></div>
       </dl>
     </div>
   </section>

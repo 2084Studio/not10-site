@@ -1,4 +1,5 @@
-"""Generate web-ready images from the original covers.
+"""Generate web-ready covers, the share image and icons from the original covers.
+(The paper textures and hero artwork come from tools/build_hero.py.)
 
 Usage:  python3 tools/build_assets.py
 Needs:  pip install pillow numpy
@@ -15,8 +16,8 @@ IMG = ROOT / "assets" / "img"
 IMG.mkdir(parents=True, exist_ok=True)
 
 LANGS = ["zh", "en", "es", "fr", "de", "ja", "ko"]
-RED = (158, 16, 21)
-CREAM = (236, 228, 214)
+RED = (125, 3, 5)        # cover paper (see tools/build_hero.py)
+CREAM = (219, 204, 186)
 
 
 def source(lang):
@@ -36,53 +37,6 @@ def covers():
         for width in (480, 1000):
             out = im.resize((width, round(width * 1.5)), Image.LANCZOS)
             out.save(COVERS / f"cover-{lang}-{width}.webp", "WEBP", quality=82, method=6)
-
-
-def tileable_noise(size, beta, seed):
-    """Periodic 1/f^beta noise via FFT, normalised to 0..1 (tiles seamlessly)."""
-    rng = np.random.default_rng(seed)
-    white = rng.standard_normal((size, size))
-    f = np.fft.fftfreq(size)
-    fx, fy = np.meshgrid(f, f)
-    r = np.sqrt(fx**2 + fy**2)
-    r[0, 0] = 1
-    spectrum = np.fft.fft2(white) / r**beta
-    spectrum[0, 0] = 0
-    n = np.real(np.fft.ifft2(spectrum))
-    n -= n.min()
-    return n / n.max()
-
-
-def fibres(size, count, seed, length=(6, 22)):
-    """Short wrapped strokes, like fibres in handmade paper."""
-    rng = np.random.default_rng(seed)
-    layer = Image.new("L", (size, size), 0)
-    d = ImageDraw.Draw(layer)
-    for _ in range(count):
-        x, y = rng.uniform(0, size, 2)
-        ang = rng.uniform(0, np.pi)
-        ln = rng.uniform(*length)
-        pts = []
-        for t in np.linspace(0, 1, 5):
-            a = ang + np.sin(t * 3) * 0.4
-            pts.append((x + np.cos(a) * ln * t, y + np.sin(a) * ln * t))
-        v = int(rng.uniform(40, 150))
-        for ox in (-size, 0, size):
-            for oy in (-size, 0, size):
-                d.line([(px + ox, py + oy) for px, py in pts], fill=v, width=1)
-    return np.asarray(layer.filter(ImageFilter.GaussianBlur(0.6)), dtype=float) / 255
-
-
-def paper(name, base, size=512, seed=1, contrast=1.0, fibre_sign=1):
-    low = tileable_noise(size, 1.3, seed)
-    mid = tileable_noise(size, 0.9, seed + 1)
-    grain = tileable_noise(size, 0.2, seed + 2)
-    fib = fibres(size, 1400, seed + 3)
-    fib_dark = fibres(size, 1600, seed + 4, length=(3, 10))
-    t = (low - 0.5) * 0.45 + (mid - 0.5) * 0.35 + (grain - 0.5) * 0.7
-    t = (t + (fib - fib_dark) * 0.45 * fibre_sign) * contrast
-    rgb = np.clip(np.array(base, dtype=float)[None, None, :] * (1 + t[..., None] * 0.55), 0, 255)
-    Image.fromarray(rgb.astype(np.uint8)).save(IMG / name, "WEBP", quality=80, method=6)
 
 
 def social_card():
@@ -142,8 +96,6 @@ def icons():
 
 if __name__ == "__main__":
     covers()
-    paper("paper-red.webp", RED, seed=11, contrast=1.0, fibre_sign=1)
-    paper("paper-cream.webp", CREAM, seed=21, contrast=0.3, fibre_sign=-1)
     social_card()
     icons()
     for p in sorted(list(COVERS.glob("*.webp")) + list(IMG.iterdir())):
