@@ -35,9 +35,9 @@ CNAME                   custom domain for GitHub Pages
 - **Lecture series (28 講)**: put the YouTube playlist ID (the `list=` value of the playlist URL) in
   `data-playlist` on `<section id="lectures">`, and the lecture titles in the `lectures__title` spans.
   A `data-video` on a lecture button plays that exact video instead of the playlist position.
-- **Animated series (30 集)**: each episode has a Chinese and an English version. To release one, put its
-  YouTube video ID in `data-zh` and/or `data-en` on that episode's `reel__frame` (both pages). The 中文版 /
-  English toggle chooses which version plays; a frame lights up with its thumbnail once that language has an ID.
+- **Animated series (30 集)**: each episode button in the Animation section has `data-zh` and `data-en`
+  for the YouTube ID of each version. `data-sample-zh` (or `-en`) marks the episode as a lit preview (樣片)
+  for that language. The 中文版 / English toggle switches labels, lit episodes and videos together.
 - **Edition status** (即將出版 / 陸續推出 / Coming soon / Forthcoming): the `data-status` attribute on each
   button in the Editions section.
 

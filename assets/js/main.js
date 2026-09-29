@@ -744,76 +744,85 @@
   }
 
   /* ------------------------------------------------------------
-     Animated series: thirty frames on film; released episodes
-     (data-video) show their thumbnail and play in a lightbox
+     Animated series: a player and an index of thirty episodes,
+     each in a Chinese and an English version
      ------------------------------------------------------------ */
-  function openVideo(id, title, closeLabel) {
-    let modal = document.querySelector('.video-modal');
-    if (!modal) {
-      modal = document.createElement('div');
-      modal.className = 'video-modal';
-      modal.hidden = true;
-      modal.setAttribute('role', 'dialog');
-      modal.setAttribute('aria-modal', 'true');
-      modal.innerHTML = '<div class="video-modal__box"><button type="button" class="video-modal__close"></button></div>';
-      document.body.append(modal);
-      const close = () => { modal.hidden = true; const f = modal.querySelector('iframe'); if (f) f.remove(); };
-      modal.addEventListener('click', e => { if (e.target === modal) close(); });
-      modal.querySelector('.video-modal__close').addEventListener('click', close);
-      document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.hidden) close(); });
+
+
+  function initEpisodes() {
+    const root = document.querySelector('[data-episodes]');
+    if (!root) return;
+    const T = {
+      zh: { series: '北靜 · 文革非十年 動畫', sample: '樣片', soon: '即將推出' },
+      en: { series: 'Bei.Jing · Not Ten Years — animated', sample: 'Preview', soon: 'Coming soon' }
+    };
+    const player = root.querySelector('[data-ep-player]');
+    const poster = root.querySelector('[data-ep-play]');
+    const big = root.querySelector('[data-ep-big]');
+    const title = root.querySelector('[data-ep-title]');
+    const tag = root.querySelector('[data-ep-tag]');
+    const series = root.querySelector('.ep-poster__series');
+    const tabs = [...root.querySelectorAll('[data-ep-lang]')];
+    const items = [...root.querySelectorAll('[data-ep]')];
+    let lang = root.dataset.lang || 'zh', current = 0;
+
+    // each episode: a YouTube ID per language (data-zh / data-en); data-sample-zh / -en marks a short preview
+    const id = b => (b.dataset[lang] || '').trim();
+    const sample = b => b.hasAttribute(`data-sample-${lang}`);
+    const lit = b => !!id(b) || sample(b);
+
+    function stop() {
+      const f = player.querySelector('iframe');
+      if (f) f.remove();
+      poster.hidden = false;
     }
-    const btn = modal.querySelector('.video-modal__close');
-    btn.textContent = closeLabel || '×';
-    const f = document.createElement('iframe');
-    f.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&playsinline=1`;
-    f.title = title;
-    f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-    f.referrerPolicy = 'strict-origin-when-cross-origin';
-    f.allowFullscreen = true;
-    modal.setAttribute('aria-label', title);
-    modal.querySelector('.video-modal__box').append(f);
-    modal.hidden = false;
-    btn.focus();
+
+    function show(i) {
+      current = i;
+      const b = items[i];
+      items.forEach((x, k) => (k === i ? x.setAttribute('aria-current', 'true') : x.removeAttribute('aria-current')));
+      stop();
+      big.textContent = String(i + 1).padStart(2, '0');
+      title.textContent = `${b.dataset[`${lang}No`]} · ${b.dataset[`${lang}Title`]}`;
+      tag.textContent = sample(b) ? T[lang].sample : id(b) ? '' : T[lang].soon;
+      tag.hidden = !tag.textContent;
+      player.classList.toggle('is-lit', lit(b));
+      player.classList.toggle('is-playable', !!id(b));
+      poster.disabled = !id(b);
+    }
+
+    function render() {
+      series.textContent = T[lang].series;
+      items.forEach(b => {
+        b.querySelector('.ep__no').textContent = b.dataset[`${lang}No`];
+        b.querySelector('.ep__title').textContent = b.dataset[`${lang}Title`];
+        const t = b.querySelector('.ep__tag');
+        t.textContent = sample(b) ? T[lang].sample : '';
+        b.classList.toggle('is-lit', lit(b));
+        b.lang = lang === 'zh' ? 'zh-Hant' : 'en';
+      });
+      tabs.forEach(t => t.setAttribute('aria-selected', String(t.dataset.epLang === lang)));
+      const first = items.findIndex(lit);
+      show(first < 0 ? 0 : first);
+    }
+
+    poster.addEventListener('click', () => {
+      const v = id(items[current]);
+      if (!v) return;
+      const f = document.createElement('iframe');
+      f.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(v)}?autoplay=1&rel=0&playsinline=1`;
+      f.title = title.textContent;
+      f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      f.referrerPolicy = 'strict-origin-when-cross-origin';
+      f.allowFullscreen = true;
+      player.append(f);
+      poster.hidden = true;
+    });
+    items.forEach((b, i) => b.addEventListener('click', () => show(i)));
+    tabs.forEach(t => t.addEventListener('click', () => { lang = t.dataset.epLang; render(); }));
+    render();
   }
 
-  function initReel() {
-    const root = document.querySelector('[data-animation]');
-    if (!root) return null;
-    const rows = [...root.querySelectorAll('.reel__row')];
-    // every episode has a Chinese and an English version: data-zh / data-en hold the YouTube IDs
-    const frames = [...root.querySelectorAll('.reel__frame')];
-    const tabs = [...root.querySelectorAll('[data-reel-lang]')];
-    let lang = (tabs.find(t => t.getAttribute('aria-selected') === 'true') || {}).dataset?.reelLang || 'zh';
-    const idOf = f => (f.dataset[lang] || '').trim();
-    function open(f) {
-      const id = idOf(f);
-      if (id) openVideo(id, f.querySelector('.reel__ch').textContent, root.dataset.close);
-    }
-    function apply() {
-      frames.forEach(f => {
-        const id = idOf(f);
-        f.classList.toggle('is-out', !!id);
-        f.style.backgroundImage = id ? `url("https://i.ytimg.com/vi/${encodeURIComponent(id)}/hqdefault.jpg")` : '';
-        if (id) { f.tabIndex = 0; f.setAttribute('role', 'button'); }
-        else { f.removeAttribute('tabindex'); f.removeAttribute('role'); }
-      });
-      tabs.forEach(t => t.setAttribute('aria-selected', String(t.dataset.reelLang === lang)));
-    }
-    frames.forEach(f => {
-      f.addEventListener('click', () => open(f));
-      f.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && idOf(f)) { e.preventDefault(); open(f); } });
-    });
-    tabs.forEach(t => t.addEventListener('click', () => { lang = t.dataset.reelLang; apply(); }));
-    apply();
-    const wide = window.matchMedia('(min-width: 861px)');
-    function onScroll() {
-      if (reduceMotion || !wide.matches) return;
-      const r = root.getBoundingClientRect();
-      const p = clamp((window.innerHeight - r.top) / (window.innerHeight + r.height), 0, 1);
-      rows.forEach((row, k) => row.style.setProperty('--shift', `${((p - .5) * 110 * (k % 2 ? -1 : 1)).toFixed(1)}px`));
-    }
-    return { scroll: onScroll };
-  }
 
   /* ------------------------------------------------------------
      Menu on narrow screens
@@ -843,7 +852,7 @@
   initReveal();
   const timeline = initTimeline();
   const manuscript = initManuscript();
-  const reel = initReel();
+  initEpisodes();
   initLectures();
   initMenu();
   initTilt();
@@ -859,7 +868,6 @@
     if (hero) hero.scroll();
     if (timeline) timeline.scroll();
     if (manuscript) manuscript.scroll();
-    if (reel) reel.scroll();
     const heroP = hero ? hero.progress() : 1;
     header.classList.toggle('is-solid', heroP > .5);
     const max = document.documentElement.scrollHeight - window.innerHeight;
