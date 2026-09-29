@@ -781,8 +781,6 @@
     if (!root) return null;
     const rows = [...root.querySelectorAll('.reel__row')];
     const released = [...root.querySelectorAll('.reel__frame')].filter(f => (f.dataset.video || '').trim());
-    const count = root.querySelector('[data-reel-count]');
-    if (count) count.textContent = String(released.length);
     released.forEach(f => {
       const id = f.dataset.video.trim();
       const title = f.querySelector('.reel__ch').textContent;
