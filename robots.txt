@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://culturalrevolution.2084studio.com/sitemap.xml
+Sitemap: https://not10.2084studio.com/sitemap.xml
