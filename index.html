@@ -61,13 +61,18 @@
 
 <header class="site-header" data-header>
   <a class="brand" href="#top">文革非十年</a>
-  <nav class="nav" aria-label="主選單">
-    <a href="#book">本書</a>
+  <nav class="nav" id="site-nav" aria-label="主選單">
     <a href="#trailer">宣傳片</a>
+    <a href="#book">本書</a>
+    <a href="#lectures">公開課</a>
+    <a href="#animation">動畫</a>
     <a href="#editions">七種語言</a>
     <a href="#contact">聯絡</a>
   </nav>
   <a class="lang-switch" href="en/" hreflang="en" lang="en">EN</a>
+  <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" data-menu>
+    <span class="menu-btn__label">目錄</span><span class="menu-btn__icon" aria-hidden="true"><i></i><i></i></span>
+  </button>
 </header>
 
 <main id="main">
@@ -94,7 +99,31 @@
     </div>
   </section>
 
-  <!-- 2 · 問題與時間軸 -->
+  <!-- 2 · 宣傳片 -->
+  <section class="trailer bg-cream" id="trailer">
+    <div class="wrap">
+      <div class="trailer__head">
+        <div>
+          <p class="eyebrow reveal">Trailer</p>
+          <h2 class="display reveal">宣傳片</h2>
+        </div>
+        <div class="tabs reveal" role="tablist" aria-label="選擇影片語言">
+          <button class="tab" role="tab" aria-selected="true" data-video="SN9qZIcayBk">中文版</button>
+          <button class="tab" role="tab" aria-selected="false" data-video="TMs_cJ2ucQ0" lang="en">English</button>
+        </div>
+      </div>
+      <div class="player reveal" data-player data-play-label="播放宣傳片" data-frame-title="《文革非十年》宣傳片">
+        <a class="player__facade" href="https://www.youtube.com/watch?v=SN9qZIcayBk" target="_blank" rel="noopener">
+          <img src="https://i.ytimg.com/vi/SN9qZIcayBk/hqdefault.jpg" alt="" loading="lazy">
+          <span class="player__btn" aria-hidden="true"></span>
+          <span class="visually-hidden">播放宣傳片</span>
+        </a>
+      </div>
+      <p class="trailer__link reveal"><a href="https://www.youtube.com/watch?v=SN9qZIcayBk" target="_blank" rel="noopener" data-yt-link>在 YouTube 上觀看 ↗</a></p>
+    </div>
+  </section>
+
+  <!-- 3 · 問題與時間軸 -->
   <section class="question bg-cream" id="question">
     <div class="wrap">
       <p class="eyebrow reveal">一個問題</p>
@@ -129,7 +158,7 @@
     </div>
   </section>
 
-  <!-- 3 · 關於本書 -->
+  <!-- 4 · 關於本書 -->
   <section class="book bg-red has-tear" id="book">
     <div class="tear-edge tear-edge--top" aria-hidden="true"></div>
     <div class="tear-edge tear-edge--bottom" aria-hidden="true"></div>
@@ -169,21 +198,45 @@
     <p class="wrap marquee__caption reveal">從大字報、紅衛兵、造反、武鬥、軍管、清查，到日常生活與個人命運——<br>本書試圖把那些通常被分開講述的歷史，重新連接起來。</p>
   </section>
 
-  <!-- 4 · 本書關心 -->
+  <!-- 5 · 本書關心 -->
   <section class="concerns bg-cream" id="concerns">
-    <div class="wrap">
+    <div class="wrap concerns__intro">
       <p class="eyebrow reveal">本書關心</p>
       <h2 class="display display--sm reveal">不只是誰發動了文化大革命、<br>誰成為受害者。</h2>
-      <ol class="cards">
-        <li class="card reveal" style="--d:0s"><span class="card__glyph" aria-hidden="true">文</span><h3 class="card__title">文化</h3><p>「文化」如何成為解釋現實的權力。</p></li>
-        <li class="card reveal" style="--d:.1s"><span class="card__glyph" aria-hidden="true">革</span><h3 class="card__title">革命</h3><p>「革命」如何讓既有規則失去約束。</p></li>
-        <li class="card reveal" style="--d:.2s"><span class="card__glyph" aria-hidden="true">言</span><h3 class="card__title">語言</h3><p>權力如何進入語言，語言又如何重新劃分人群。</p></li>
-        <li class="card reveal" style="--d:.3s"><span class="card__glyph" aria-hidden="true">人</span><h3 class="card__title">選擇</h3><p>普通人如何在一個規則不斷改變的世界裡作出選擇。</p></li>
-      </ol>
+    </div>
+    <div class="concerns__scroll" data-concerns data-seal="權力">
+      <div class="concerns__stage">
+        <div class="concerns__art" aria-hidden="true"><canvas></canvas></div>
+        <div class="concerns__text">
+          <ol class="concerns__list">
+          <li class="concern is-active">
+            <span class="concern__no">01<small> / 04</small></span>
+            <h3 class="concern__word">文化</h3>
+            <p class="concern__line">「文化」如何成為解釋現實的權力。</p>
+          </li>
+          <li class="concern">
+            <span class="concern__no">02<small> / 04</small></span>
+            <h3 class="concern__word" data-tear="革命">革命</h3>
+            <p class="concern__line">「革命」如何讓既有規則失去約束。</p>
+          </li>
+          <li class="concern">
+            <span class="concern__no">03<small> / 04</small></span>
+            <h3 class="concern__word">語言</h3>
+            <p class="concern__line">權力如何進入語言，語言又如何重新劃分人群。</p>
+          </li>
+          <li class="concern">
+            <span class="concern__no">04<small> / 04</small></span>
+            <h3 class="concern__word">選擇</h3>
+            <p class="concern__line">普通人如何在一個規則不斷改變的世界裡作出選擇。</p>
+          </li>
+          </ol>
+          <div class="concerns__progress" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- 5 · 街道與大字報 -->
+  <!-- 6 · 街道與大字報 -->
   <section class="street bg-red has-tear" id="street">
     <div class="tear-edge tear-edge--top" aria-hidden="true"></div>
     <div class="tear-edge tear-edge--bottom" aria-hidden="true"></div>
@@ -202,31 +255,130 @@
     </div>
   </section>
 
-  <!-- 6 · 宣傳片 -->
-  <section class="trailer bg-night" id="trailer">
+  <!-- 7 · 系列公開課 -->
+  <section class="lectures bg-night" id="lectures" data-lectures data-playlist="">
     <div class="wrap">
-      <div class="trailer__head">
+      <div class="media-head">
         <div>
-          <p class="eyebrow eyebrow--light reveal">Trailer</p>
-          <h2 class="display reveal">宣傳片</h2>
+          <p class="eyebrow eyebrow--light reveal">系列公開課 · <span lang="en">Lectures</span></p>
+          <h2 class="display reveal">二十八講</h2>
         </div>
-        <div class="tabs reveal" role="tablist" aria-label="選擇影片語言">
-          <button class="tab" role="tab" aria-selected="true" data-video="SN9qZIcayBk">中文版</button>
-          <button class="tab" role="tab" aria-selected="false" data-video="TMs_cJ2ucQ0" lang="en">English</button>
+        <p class="media-head__lede reveal">北靜的系列公開課，共二十八講，可在 YouTube 完整觀看。</p>
+      </div>
+      <div class="lectures__body reveal">
+        <div class="player lectures__player" data-lecture-player data-frame-title="北靜 · 系列公開課">
+          <button class="lecture-poster" type="button" data-lecture-play>
+            <span class="lecture-poster__series">北靜 · 系列公開課</span>
+            <span class="lecture-poster__no" data-lecture-no>01</span>
+            <span class="lecture-poster__label" data-lecture-label>第 1 講</span>
+            <span class="player__btn" aria-hidden="true"></span>
+            <span class="visually-hidden">播放</span>
+          </button>
+        </div>
+        <div class="lectures__index">
+        <ol class="lectures__list" aria-label="課程目錄">
+          <li><button type="button" data-lecture="0" data-label="第 1 講" data-video="" aria-current="true"><span class="lectures__no">01</span><span class="lectures__title">第一講</span></button></li>
+          <li><button type="button" data-lecture="1" data-label="第 2 講" data-video=""><span class="lectures__no">02</span><span class="lectures__title">第二講</span></button></li>
+          <li><button type="button" data-lecture="2" data-label="第 3 講" data-video=""><span class="lectures__no">03</span><span class="lectures__title">第三講</span></button></li>
+          <li><button type="button" data-lecture="3" data-label="第 4 講" data-video=""><span class="lectures__no">04</span><span class="lectures__title">第四講</span></button></li>
+          <li><button type="button" data-lecture="4" data-label="第 5 講" data-video=""><span class="lectures__no">05</span><span class="lectures__title">第五講</span></button></li>
+          <li><button type="button" data-lecture="5" data-label="第 6 講" data-video=""><span class="lectures__no">06</span><span class="lectures__title">第六講</span></button></li>
+          <li><button type="button" data-lecture="6" data-label="第 7 講" data-video=""><span class="lectures__no">07</span><span class="lectures__title">第七講</span></button></li>
+          <li><button type="button" data-lecture="7" data-label="第 8 講" data-video=""><span class="lectures__no">08</span><span class="lectures__title">第八講</span></button></li>
+          <li><button type="button" data-lecture="8" data-label="第 9 講" data-video=""><span class="lectures__no">09</span><span class="lectures__title">第九講</span></button></li>
+          <li><button type="button" data-lecture="9" data-label="第 10 講" data-video=""><span class="lectures__no">10</span><span class="lectures__title">第十講</span></button></li>
+          <li><button type="button" data-lecture="10" data-label="第 11 講" data-video=""><span class="lectures__no">11</span><span class="lectures__title">第十一講</span></button></li>
+          <li><button type="button" data-lecture="11" data-label="第 12 講" data-video=""><span class="lectures__no">12</span><span class="lectures__title">第十二講</span></button></li>
+          <li><button type="button" data-lecture="12" data-label="第 13 講" data-video=""><span class="lectures__no">13</span><span class="lectures__title">第十三講</span></button></li>
+          <li><button type="button" data-lecture="13" data-label="第 14 講" data-video=""><span class="lectures__no">14</span><span class="lectures__title">第十四講</span></button></li>
+          <li><button type="button" data-lecture="14" data-label="第 15 講" data-video=""><span class="lectures__no">15</span><span class="lectures__title">第十五講</span></button></li>
+          <li><button type="button" data-lecture="15" data-label="第 16 講" data-video=""><span class="lectures__no">16</span><span class="lectures__title">第十六講</span></button></li>
+          <li><button type="button" data-lecture="16" data-label="第 17 講" data-video=""><span class="lectures__no">17</span><span class="lectures__title">第十七講</span></button></li>
+          <li><button type="button" data-lecture="17" data-label="第 18 講" data-video=""><span class="lectures__no">18</span><span class="lectures__title">第十八講</span></button></li>
+          <li><button type="button" data-lecture="18" data-label="第 19 講" data-video=""><span class="lectures__no">19</span><span class="lectures__title">第十九講</span></button></li>
+          <li><button type="button" data-lecture="19" data-label="第 20 講" data-video=""><span class="lectures__no">20</span><span class="lectures__title">第二十講</span></button></li>
+          <li><button type="button" data-lecture="20" data-label="第 21 講" data-video=""><span class="lectures__no">21</span><span class="lectures__title">第二十一講</span></button></li>
+          <li><button type="button" data-lecture="21" data-label="第 22 講" data-video=""><span class="lectures__no">22</span><span class="lectures__title">第二十二講</span></button></li>
+          <li><button type="button" data-lecture="22" data-label="第 23 講" data-video=""><span class="lectures__no">23</span><span class="lectures__title">第二十三講</span></button></li>
+          <li><button type="button" data-lecture="23" data-label="第 24 講" data-video=""><span class="lectures__no">24</span><span class="lectures__title">第二十四講</span></button></li>
+          <li><button type="button" data-lecture="24" data-label="第 25 講" data-video=""><span class="lectures__no">25</span><span class="lectures__title">第二十五講</span></button></li>
+          <li><button type="button" data-lecture="25" data-label="第 26 講" data-video=""><span class="lectures__no">26</span><span class="lectures__title">第二十六講</span></button></li>
+          <li><button type="button" data-lecture="26" data-label="第 27 講" data-video=""><span class="lectures__no">27</span><span class="lectures__title">第二十七講</span></button></li>
+          <li><button type="button" data-lecture="27" data-label="第 28 講" data-video=""><span class="lectures__no">28</span><span class="lectures__title">第二十八講</span></button></li>
+        </ol>
         </div>
       </div>
-      <div class="player reveal" data-player data-play-label="播放宣傳片" data-frame-title="《文革非十年》宣傳片">
-        <a class="player__facade" href="https://www.youtube.com/watch?v=SN9qZIcayBk" target="_blank" rel="noopener">
-          <img src="https://i.ytimg.com/vi/SN9qZIcayBk/hqdefault.jpg" alt="" loading="lazy">
-          <span class="player__btn" aria-hidden="true"></span>
-          <span class="visually-hidden">播放宣傳片</span>
-        </a>
-      </div>
-      <p class="trailer__link reveal"><a href="https://www.youtube.com/watch?v=SN9qZIcayBk" target="_blank" rel="noopener" data-yt-link>在 YouTube 上觀看 ↗</a></p>
+      <p class="trailer__link lectures__link reveal"><a href="#" target="_blank" rel="noopener" data-playlist-link>在 YouTube 觀看完整播放清單 ↗</a></p>
     </div>
   </section>
 
-  <!-- 7 · 七種語言 -->
+  <!-- 8 · 動畫系列 -->
+  <section class="animation bg-night" id="animation" data-animation data-close="關閉">
+    <div class="wrap">
+      <div class="media-head">
+        <div>
+          <p class="eyebrow eyebrow--light reveal">動畫系列 · <span lang="en">Animated series</span></p>
+          <h2 class="display reveal">三十章，三十集。</h2>
+        </div>
+        <p class="media-head__lede reveal">全書三十章，將逐章改編為三十集系列動畫，陸續推出。</p>
+      </div>
+    </div>
+    <div class="reel reveal" role="group" aria-label="三十集動畫，逐章推出">
+        <div class="reel__row" style="--dir:1">
+          <ol class="reel__frames" start="1">
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 01</span><span class="reel__no">01</span><span class="reel__ch">第一章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 02</span><span class="reel__no">02</span><span class="reel__ch">第二章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 03</span><span class="reel__no">03</span><span class="reel__ch">第三章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 04</span><span class="reel__no">04</span><span class="reel__ch">第四章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 05</span><span class="reel__no">05</span><span class="reel__ch">第五章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 06</span><span class="reel__no">06</span><span class="reel__ch">第六章</span><span class="reel__status">即將推出</span></li>
+          </ol>
+        </div>
+        <div class="reel__row" style="--dir:-1">
+          <ol class="reel__frames" start="7">
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 07</span><span class="reel__no">07</span><span class="reel__ch">第七章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 08</span><span class="reel__no">08</span><span class="reel__ch">第八章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 09</span><span class="reel__no">09</span><span class="reel__ch">第九章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 10</span><span class="reel__no">10</span><span class="reel__ch">第十章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 11</span><span class="reel__no">11</span><span class="reel__ch">第十一章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 12</span><span class="reel__no">12</span><span class="reel__ch">第十二章</span><span class="reel__status">即將推出</span></li>
+          </ol>
+        </div>
+        <div class="reel__row" style="--dir:1">
+          <ol class="reel__frames" start="13">
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 13</span><span class="reel__no">13</span><span class="reel__ch">第十三章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 14</span><span class="reel__no">14</span><span class="reel__ch">第十四章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 15</span><span class="reel__no">15</span><span class="reel__ch">第十五章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 16</span><span class="reel__no">16</span><span class="reel__ch">第十六章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 17</span><span class="reel__no">17</span><span class="reel__ch">第十七章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 18</span><span class="reel__no">18</span><span class="reel__ch">第十八章</span><span class="reel__status">即將推出</span></li>
+          </ol>
+        </div>
+        <div class="reel__row" style="--dir:-1">
+          <ol class="reel__frames" start="19">
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 19</span><span class="reel__no">19</span><span class="reel__ch">第十九章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 20</span><span class="reel__no">20</span><span class="reel__ch">第二十章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 21</span><span class="reel__no">21</span><span class="reel__ch">第二十一章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 22</span><span class="reel__no">22</span><span class="reel__ch">第二十二章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 23</span><span class="reel__no">23</span><span class="reel__ch">第二十三章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 24</span><span class="reel__no">24</span><span class="reel__ch">第二十四章</span><span class="reel__status">即將推出</span></li>
+          </ol>
+        </div>
+        <div class="reel__row" style="--dir:1">
+          <ol class="reel__frames" start="25">
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 25</span><span class="reel__no">25</span><span class="reel__ch">第二十五章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 26</span><span class="reel__no">26</span><span class="reel__ch">第二十六章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 27</span><span class="reel__no">27</span><span class="reel__ch">第二十七章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 28</span><span class="reel__no">28</span><span class="reel__ch">第二十八章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 29</span><span class="reel__no">29</span><span class="reel__ch">第二十九章</span><span class="reel__status">即將推出</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 30</span><span class="reel__no">30</span><span class="reel__ch">第三十章</span><span class="reel__status">即將推出</span></li>
+          </ol>
+        </div>
+    </div>
+    <p class="wrap reel__count reveal"><b data-reel-count>0</b> / 30 集已上線</p>
+  </section>
+
+  <!-- 9 · 七種語言 -->
   <section class="editions bg-cream" id="editions">
     <div class="wrap">
       <p class="eyebrow reveal">七種語言</p>
@@ -257,7 +409,7 @@
     </div>
   </section>
 
-  <!-- 8 · 結語 -->
+  <!-- 10 · 結語 -->
   <section class="closing bg-red has-tear" id="closing">
     <div class="tear-edge tear-edge--top" aria-hidden="true"></div>
     <div class="tear-edge tear-edge--bottom" aria-hidden="true"></div>
@@ -269,7 +421,7 @@
     </div>
   </section>
 
-  <!-- 9 · 聯絡 -->
+  <!-- 11 · 聯絡 -->
   <section class="contact bg-cream" id="contact">
     <div class="wrap">
       <p class="eyebrow reveal">聯絡</p>

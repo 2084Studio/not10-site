@@ -61,13 +61,18 @@
 
 <header class="site-header" data-header>
   <a class="brand" href="#top">NOT TEN YEARS</a>
-  <nav class="nav" aria-label="Main">
-    <a href="#book">The Book</a>
+  <nav class="nav" id="site-nav" aria-label="Main">
     <a href="#trailer">Trailer</a>
+    <a href="#book">The Book</a>
+    <a href="#lectures">Lectures</a>
+    <a href="#animation">Animation</a>
     <a href="#editions">Editions</a>
     <a href="#contact">Contact</a>
   </nav>
   <a class="lang-switch" href="../" hreflang="zh-Hant" lang="zh-Hant">中文</a>
+  <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" data-menu>
+    <span class="menu-btn__label">Menu</span><span class="menu-btn__icon" aria-hidden="true"><i></i><i></i></span>
+  </button>
 </header>
 
 <main id="main">
@@ -92,7 +97,31 @@
     </div>
   </section>
 
-  <!-- 2 · Question + timeline -->
+  <!-- 2 · Trailer -->
+  <section class="trailer bg-cream" id="trailer">
+    <div class="wrap">
+      <div class="trailer__head">
+        <div>
+          <p class="eyebrow reveal" lang="zh-Hant">宣傳片</p>
+          <h2 class="display reveal">Trailer</h2>
+        </div>
+        <div class="tabs reveal" role="tablist" aria-label="Choose trailer language">
+          <button class="tab" role="tab" aria-selected="true" data-video="TMs_cJ2ucQ0">English</button>
+          <button class="tab" role="tab" aria-selected="false" data-video="SN9qZIcayBk" lang="zh-Hant">中文版</button>
+        </div>
+      </div>
+      <div class="player reveal" data-player data-play-label="Play the trailer" data-frame-title="Not Ten Years — trailer">
+        <a class="player__facade" href="https://www.youtube.com/watch?v=TMs_cJ2ucQ0" target="_blank" rel="noopener">
+          <img src="https://i.ytimg.com/vi/TMs_cJ2ucQ0/hqdefault.jpg" alt="" loading="lazy">
+          <span class="player__btn" aria-hidden="true"></span>
+          <span class="visually-hidden">Play the trailer</span>
+        </a>
+      </div>
+      <p class="trailer__link reveal"><a href="https://www.youtube.com/watch?v=TMs_cJ2ucQ0" target="_blank" rel="noopener" data-yt-link>Watch on YouTube ↗</a></p>
+    </div>
+  </section>
+
+  <!-- 3 · Question + timeline -->
   <section class="question bg-cream" id="question">
     <div class="wrap">
       <p class="eyebrow reveal">A question</p>
@@ -127,7 +156,7 @@
     </div>
   </section>
 
-  <!-- 3 · The book -->
+  <!-- 4 · The book -->
   <section class="book bg-red has-tear" id="book">
     <div class="tear-edge tear-edge--top" aria-hidden="true"></div>
     <div class="tear-edge tear-edge--bottom" aria-hidden="true"></div>
@@ -167,21 +196,45 @@
     <p class="wrap marquee__caption reveal">From Yan’an Rectification to big-character posters, Red Guards, military control and everyday survival —<br>the book reconnects histories that are often told separately.</p>
   </section>
 
-  <!-- 4 · Concerns -->
+  <!-- 5 · What the book asks -->
   <section class="concerns bg-cream" id="concerns">
-    <div class="wrap">
+    <div class="wrap concerns__intro">
       <p class="eyebrow reveal">What the book asks</p>
       <h2 class="display display--sm reveal">Not only who launched the Cultural Revolution, or who suffered under it.</h2>
-      <ol class="cards">
-        <li class="card reveal" style="--d:0s"><span class="card__glyph" aria-hidden="true">言</span><h3 class="card__title">Language</h3><p>How political power entered language — and how language divided people into new categories.</p></li>
-        <li class="card reveal" style="--d:.1s"><span class="card__glyph" aria-hidden="true">革</span><h3 class="card__title">Rules</h3><p>How rules and institutional boundaries eroded, until institutions could no longer protect those inside them.</p></li>
-        <li class="card reveal" style="--d:.2s"><span class="card__glyph" aria-hidden="true">名</span><h3 class="card__title">Labels</h3><p>How labels, accusations, mass mobilization and loyalty could reshape an individual life.</p></li>
-        <li class="card reveal" style="--d:.3s"><span class="card__glyph" aria-hidden="true">人</span><h3 class="card__title">Survival</h3><p>How ordinary people tried to survive in a world where the rules themselves could suddenly change.</p></li>
-      </ol>
+    </div>
+    <div class="concerns__scroll" data-concerns data-seal="POWER">
+      <div class="concerns__stage">
+        <div class="concerns__art" aria-hidden="true"><canvas></canvas></div>
+        <div class="concerns__text">
+          <ol class="concerns__list">
+          <li class="concern is-active">
+            <span class="concern__no">01<small> / 04</small></span>
+            <h3 class="concern__word">Culture</h3>
+            <p class="concern__line">How “culture” became the power to interpret reality.</p>
+          </li>
+          <li class="concern">
+            <span class="concern__no">02<small> / 04</small></span>
+            <h3 class="concern__word" data-tear="Revolution">Revolution</h3>
+            <p class="concern__line">How “revolution” eroded rules and institutional boundaries.</p>
+          </li>
+          <li class="concern">
+            <span class="concern__no">03<small> / 04</small></span>
+            <h3 class="concern__word">Language</h3>
+            <p class="concern__line">How political power entered language — and how language divided people into new categories.</p>
+          </li>
+          <li class="concern">
+            <span class="concern__no">04<small> / 04</small></span>
+            <h3 class="concern__word">Choice</h3>
+            <p class="concern__line">How ordinary people tried to survive in a world where the rules themselves could suddenly change.</p>
+          </li>
+          </ol>
+          <div class="concerns__progress" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- 5 · Street & posters -->
+  <!-- 6 · Street & posters -->
   <section class="street bg-red has-tear" id="street">
     <div class="tear-edge tear-edge--top" aria-hidden="true"></div>
     <div class="tear-edge tear-edge--bottom" aria-hidden="true"></div>
@@ -200,31 +253,130 @@
     </div>
   </section>
 
-  <!-- 6 · Trailer -->
-  <section class="trailer bg-night" id="trailer">
+  <!-- 7 · Lecture series -->
+  <section class="lectures bg-night" id="lectures" data-lectures data-playlist="">
     <div class="wrap">
-      <div class="trailer__head">
+      <div class="media-head">
         <div>
-          <p class="eyebrow eyebrow--light reveal" lang="zh-Hant">宣傳片</p>
-          <h2 class="display reveal">Trailer</h2>
+          <p class="eyebrow eyebrow--light reveal">Lecture series · <span lang="zh-Hant">公開課</span></p>
+          <h2 class="display reveal">Twenty-eight lectures</h2>
         </div>
-        <div class="tabs reveal" role="tablist" aria-label="Choose trailer language">
-          <button class="tab" role="tab" aria-selected="true" data-video="TMs_cJ2ucQ0">English</button>
-          <button class="tab" role="tab" aria-selected="false" data-video="SN9qZIcayBk" lang="zh-Hant">中文版</button>
+        <p class="media-head__lede reveal">A public lecture series by Bei.Jing in twenty-eight parts, on YouTube.</p>
+      </div>
+      <div class="lectures__body reveal">
+        <div class="player lectures__player" data-lecture-player data-frame-title="Bei.Jing · Lecture series">
+          <button class="lecture-poster" type="button" data-lecture-play>
+            <span class="lecture-poster__series">Bei.Jing · Lecture series</span>
+            <span class="lecture-poster__no" data-lecture-no>01</span>
+            <span class="lecture-poster__label" data-lecture-label>Lecture 1</span>
+            <span class="player__btn" aria-hidden="true"></span>
+            <span class="visually-hidden">Play</span>
+          </button>
+        </div>
+        <div class="lectures__index">
+        <ol class="lectures__list" aria-label="Lectures">
+          <li><button type="button" data-lecture="0" data-label="Lecture 1" data-video="" aria-current="true"><span class="lectures__no">01</span><span class="lectures__title">Lecture 1</span></button></li>
+          <li><button type="button" data-lecture="1" data-label="Lecture 2" data-video=""><span class="lectures__no">02</span><span class="lectures__title">Lecture 2</span></button></li>
+          <li><button type="button" data-lecture="2" data-label="Lecture 3" data-video=""><span class="lectures__no">03</span><span class="lectures__title">Lecture 3</span></button></li>
+          <li><button type="button" data-lecture="3" data-label="Lecture 4" data-video=""><span class="lectures__no">04</span><span class="lectures__title">Lecture 4</span></button></li>
+          <li><button type="button" data-lecture="4" data-label="Lecture 5" data-video=""><span class="lectures__no">05</span><span class="lectures__title">Lecture 5</span></button></li>
+          <li><button type="button" data-lecture="5" data-label="Lecture 6" data-video=""><span class="lectures__no">06</span><span class="lectures__title">Lecture 6</span></button></li>
+          <li><button type="button" data-lecture="6" data-label="Lecture 7" data-video=""><span class="lectures__no">07</span><span class="lectures__title">Lecture 7</span></button></li>
+          <li><button type="button" data-lecture="7" data-label="Lecture 8" data-video=""><span class="lectures__no">08</span><span class="lectures__title">Lecture 8</span></button></li>
+          <li><button type="button" data-lecture="8" data-label="Lecture 9" data-video=""><span class="lectures__no">09</span><span class="lectures__title">Lecture 9</span></button></li>
+          <li><button type="button" data-lecture="9" data-label="Lecture 10" data-video=""><span class="lectures__no">10</span><span class="lectures__title">Lecture 10</span></button></li>
+          <li><button type="button" data-lecture="10" data-label="Lecture 11" data-video=""><span class="lectures__no">11</span><span class="lectures__title">Lecture 11</span></button></li>
+          <li><button type="button" data-lecture="11" data-label="Lecture 12" data-video=""><span class="lectures__no">12</span><span class="lectures__title">Lecture 12</span></button></li>
+          <li><button type="button" data-lecture="12" data-label="Lecture 13" data-video=""><span class="lectures__no">13</span><span class="lectures__title">Lecture 13</span></button></li>
+          <li><button type="button" data-lecture="13" data-label="Lecture 14" data-video=""><span class="lectures__no">14</span><span class="lectures__title">Lecture 14</span></button></li>
+          <li><button type="button" data-lecture="14" data-label="Lecture 15" data-video=""><span class="lectures__no">15</span><span class="lectures__title">Lecture 15</span></button></li>
+          <li><button type="button" data-lecture="15" data-label="Lecture 16" data-video=""><span class="lectures__no">16</span><span class="lectures__title">Lecture 16</span></button></li>
+          <li><button type="button" data-lecture="16" data-label="Lecture 17" data-video=""><span class="lectures__no">17</span><span class="lectures__title">Lecture 17</span></button></li>
+          <li><button type="button" data-lecture="17" data-label="Lecture 18" data-video=""><span class="lectures__no">18</span><span class="lectures__title">Lecture 18</span></button></li>
+          <li><button type="button" data-lecture="18" data-label="Lecture 19" data-video=""><span class="lectures__no">19</span><span class="lectures__title">Lecture 19</span></button></li>
+          <li><button type="button" data-lecture="19" data-label="Lecture 20" data-video=""><span class="lectures__no">20</span><span class="lectures__title">Lecture 20</span></button></li>
+          <li><button type="button" data-lecture="20" data-label="Lecture 21" data-video=""><span class="lectures__no">21</span><span class="lectures__title">Lecture 21</span></button></li>
+          <li><button type="button" data-lecture="21" data-label="Lecture 22" data-video=""><span class="lectures__no">22</span><span class="lectures__title">Lecture 22</span></button></li>
+          <li><button type="button" data-lecture="22" data-label="Lecture 23" data-video=""><span class="lectures__no">23</span><span class="lectures__title">Lecture 23</span></button></li>
+          <li><button type="button" data-lecture="23" data-label="Lecture 24" data-video=""><span class="lectures__no">24</span><span class="lectures__title">Lecture 24</span></button></li>
+          <li><button type="button" data-lecture="24" data-label="Lecture 25" data-video=""><span class="lectures__no">25</span><span class="lectures__title">Lecture 25</span></button></li>
+          <li><button type="button" data-lecture="25" data-label="Lecture 26" data-video=""><span class="lectures__no">26</span><span class="lectures__title">Lecture 26</span></button></li>
+          <li><button type="button" data-lecture="26" data-label="Lecture 27" data-video=""><span class="lectures__no">27</span><span class="lectures__title">Lecture 27</span></button></li>
+          <li><button type="button" data-lecture="27" data-label="Lecture 28" data-video=""><span class="lectures__no">28</span><span class="lectures__title">Lecture 28</span></button></li>
+        </ol>
         </div>
       </div>
-      <div class="player reveal" data-player data-play-label="Play the trailer" data-frame-title="Not Ten Years — trailer">
-        <a class="player__facade" href="https://www.youtube.com/watch?v=TMs_cJ2ucQ0" target="_blank" rel="noopener">
-          <img src="https://i.ytimg.com/vi/TMs_cJ2ucQ0/hqdefault.jpg" alt="" loading="lazy">
-          <span class="player__btn" aria-hidden="true"></span>
-          <span class="visually-hidden">Play the trailer</span>
-        </a>
-      </div>
-      <p class="trailer__link reveal"><a href="https://www.youtube.com/watch?v=TMs_cJ2ucQ0" target="_blank" rel="noopener" data-yt-link>Watch on YouTube ↗</a></p>
+      <p class="trailer__link lectures__link reveal"><a href="#" target="_blank" rel="noopener" data-playlist-link>Watch the full playlist on YouTube ↗</a></p>
     </div>
   </section>
 
-  <!-- 7 · Editions -->
+  <!-- 8 · Animated series -->
+  <section class="animation bg-night" id="animation" data-animation data-close="Close">
+    <div class="wrap">
+      <div class="media-head">
+        <div>
+          <p class="eyebrow eyebrow--light reveal">Animated series · <span lang="zh-Hant">動畫</span></p>
+          <h2 class="display reveal">Thirty chapters, thirty episodes.</h2>
+        </div>
+        <p class="media-head__lede reveal">The book’s thirty chapters will be adapted, one by one, into a thirty-episode animated series.</p>
+      </div>
+    </div>
+    <div class="reel reveal" role="group" aria-label="Thirty episodes, one per chapter">
+        <div class="reel__row" style="--dir:1">
+          <ol class="reel__frames" start="1">
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 01</span><span class="reel__no">01</span><span class="reel__ch">Chapter 1</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 02</span><span class="reel__no">02</span><span class="reel__ch">Chapter 2</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 03</span><span class="reel__no">03</span><span class="reel__ch">Chapter 3</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 04</span><span class="reel__no">04</span><span class="reel__ch">Chapter 4</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 05</span><span class="reel__no">05</span><span class="reel__ch">Chapter 5</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 06</span><span class="reel__no">06</span><span class="reel__ch">Chapter 6</span><span class="reel__status">Coming</span></li>
+          </ol>
+        </div>
+        <div class="reel__row" style="--dir:-1">
+          <ol class="reel__frames" start="7">
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 07</span><span class="reel__no">07</span><span class="reel__ch">Chapter 7</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 08</span><span class="reel__no">08</span><span class="reel__ch">Chapter 8</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 09</span><span class="reel__no">09</span><span class="reel__ch">Chapter 9</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 10</span><span class="reel__no">10</span><span class="reel__ch">Chapter 10</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 11</span><span class="reel__no">11</span><span class="reel__ch">Chapter 11</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 12</span><span class="reel__no">12</span><span class="reel__ch">Chapter 12</span><span class="reel__status">Coming</span></li>
+          </ol>
+        </div>
+        <div class="reel__row" style="--dir:1">
+          <ol class="reel__frames" start="13">
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 13</span><span class="reel__no">13</span><span class="reel__ch">Chapter 13</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 14</span><span class="reel__no">14</span><span class="reel__ch">Chapter 14</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 15</span><span class="reel__no">15</span><span class="reel__ch">Chapter 15</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 16</span><span class="reel__no">16</span><span class="reel__ch">Chapter 16</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 17</span><span class="reel__no">17</span><span class="reel__ch">Chapter 17</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 18</span><span class="reel__no">18</span><span class="reel__ch">Chapter 18</span><span class="reel__status">Coming</span></li>
+          </ol>
+        </div>
+        <div class="reel__row" style="--dir:-1">
+          <ol class="reel__frames" start="19">
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 19</span><span class="reel__no">19</span><span class="reel__ch">Chapter 19</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 20</span><span class="reel__no">20</span><span class="reel__ch">Chapter 20</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 21</span><span class="reel__no">21</span><span class="reel__ch">Chapter 21</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 22</span><span class="reel__no">22</span><span class="reel__ch">Chapter 22</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 23</span><span class="reel__no">23</span><span class="reel__ch">Chapter 23</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 24</span><span class="reel__no">24</span><span class="reel__ch">Chapter 24</span><span class="reel__status">Coming</span></li>
+          </ol>
+        </div>
+        <div class="reel__row" style="--dir:1">
+          <ol class="reel__frames" start="25">
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 25</span><span class="reel__no">25</span><span class="reel__ch">Chapter 25</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 26</span><span class="reel__no">26</span><span class="reel__ch">Chapter 26</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 27</span><span class="reel__no">27</span><span class="reel__ch">Chapter 27</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 28</span><span class="reel__no">28</span><span class="reel__ch">Chapter 28</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 29</span><span class="reel__no">29</span><span class="reel__ch">Chapter 29</span><span class="reel__status">Coming</span></li>
+            <li class="reel__frame" data-video=""><span class="reel__ep">EP 30</span><span class="reel__no">30</span><span class="reel__ch">Chapter 30</span><span class="reel__status">Coming</span></li>
+          </ol>
+        </div>
+    </div>
+    <p class="wrap reel__count reveal"><b data-reel-count>0</b> / 30 episodes released</p>
+  </section>
+
+  <!-- 9 · Editions -->
   <section class="editions bg-cream" id="editions">
     <div class="wrap">
       <p class="eyebrow reveal">Seven languages</p>
@@ -255,7 +407,7 @@
     </div>
   </section>
 
-  <!-- 8 · Closing -->
+  <!-- 10 · Closing -->
   <section class="closing bg-red has-tear" id="closing">
     <div class="tear-edge tear-edge--top" aria-hidden="true"></div>
     <div class="tear-edge tear-edge--bottom" aria-hidden="true"></div>
@@ -267,7 +419,7 @@
     </div>
   </section>
 
-  <!-- 9 · Contact -->
+  <!-- 11 · Contact -->
   <section class="contact bg-cream" id="contact">
     <div class="wrap">
       <p class="eyebrow reveal">Contact</p>
