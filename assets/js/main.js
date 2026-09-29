@@ -19,12 +19,6 @@
     };
   }
 
-  function roundRect(g, x, y, w, h, r) {
-    g.beginPath();
-    g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r);
-    g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
-  }
-
   /* ------------------------------------------------------------
      Hero: the cover's own red paper, pulled apart.
      Artwork geometry, normalised (printed by tools/build_hero.py):
@@ -485,300 +479,154 @@
   }
 
   /* ------------------------------------------------------------
-     What the book asks: a page of 人 on manuscript paper.
-     u runs 0 → 4 through the pinned section:
-       0–1 文化  the ruled page hardens and is stamped with a seal of power
-       1–2 革命  the ruled lines break away; people drift out of their cells
-       2–3 語言  labels fall on some of them and the crowd splits along a line
-       3–4 選擇  the labels are re-issued again and again; one person stands
-                 on the line with two ways to go
+     What the book asks: the author's sentence is written onto
+     manuscript paper as the reader scrolls. Chinese goes one
+     character to a square (稿紙); English onto ruled paper. The
+     familiar questions stay grey, 不只是 is red, and the questions
+     the book adds are underlined in red pen once they are written.
      ------------------------------------------------------------ */
-  function initConcerns() {
-    const root = document.querySelector('[data-concerns]');
-    if (!root || reduceMotion) return null;
-    const art = root.querySelector('.concerns__art');
-    const canvas = art.querySelector('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return null;
-    const items = [...root.querySelectorAll('.concern')];
-    const bars = [...root.querySelectorAll('.concerns__progress i')];
-    const torn = root.querySelector('[data-tear]');
-    const sealText = root.dataset.seal || '權力';
-    root.classList.add('is-live');
+  function initManuscript() {
+    const root = document.querySelector('[data-manuscript]');
+    if (!root) return null;
+    const text = root.querySelector('.manuscript__text');
+    const cjk = /^(zh|ja)/i.test(text.closest('[lang]').lang);
+    const SVGNS = 'http://www.w3.org/2000/svg';
+    const HANG = /^[，、。；：！？」』）》〉]$/;
 
-    const INK = '#1b1613', RED = '#7d0305', RULE = '125, 3, 5';
-    const SWITCH = [3.22, 3.5, 3.78];               // the rules change three times
-    let W = 0, H = 0, dpr = 1, cell = 40;
-    let people = [], segs = [], sets = [], member = [], hero = 0, sprite = null;
-    let target = 0, u = 0, step = -1, running = false, visible = false, sized = false;
-    const t0 = performance.now();
+    // screen readers get the sentence whole
+    const plain = document.createElement('p');
+    plain.className = 'visually-hidden';
+    plain.textContent = text.textContent;
+    text.before(plain);
+    text.setAttribute('aria-hidden', 'true');
 
-    function build() {
-      const box = art.getBoundingClientRect();
-      if (box.width < 40 || box.height < 40) return;
-      W = box.width; H = box.height;
-      dpr = Math.min(2, window.devicePixelRatio || 1);
-      canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
-      cell = clamp(Math.min(W, H) / 11, 26, 52);
-      const cols = Math.max(6, Math.floor(W / cell - .5));
-      const rows = Math.max(5, Math.floor(H / cell - .5));
-      const x0 = (W - cols * cell) / 2, y0 = (H - rows * cell) / 2;
-      const rand = mulberry32(1966);
+    // one span per character (Chinese) or per word (English), keeping the marks
+    const units = [];
+    let group = 0;
+    const frag = document.createDocumentFragment();
+    [...text.childNodes].forEach(node => {
+      const mark = node.nodeType === 1 ? node.dataset.mark || '' : '';
+      const gid = mark === 'line' ? ++group : 0;
+      const parts = cjk ? [...node.textContent] : node.textContent.split(/(\s+)/);
+      parts.forEach(part => {
+        if (!part) return;
+        if (!cjk && /^\s+$/.test(part)) { frag.append(' '); return; }
+        const el = document.createElement('span');
+        el.className = 'u';
+        el.textContent = part;
+        if (mark) el.dataset.m = mark;
+        frag.append(el);
+        units.push({ el, gid, hang: cjk && HANG.test(part), r: 0, ink: -1 });
+      });
+    });
+    text.replaceChildren(frag);
+    text.classList.add('is-set');
+    root.classList.add(cjk ? 'is-grid' : 'is-ruled');
 
-      people = [];
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          people.push({
-            hx: x0 + (c + .5) * cell, hy: y0 + (r + .5) * cell,
-            wx: (rand() - .5) * cell * .95, wy: (rand() - .5) * cell * .95,
-            tilt: (rand() - .5) * .8, ph: rand() * 6.28, sp: .5 + rand() * .9,
-            drop: 2.04 + rand() * .3
-          });
-        }
-      }
-      // who carries a label under each successive set of rules
-      member = [people.map(() => rand() < .36)];
-      for (let k = 1; k < 4; k++) member.push(member[k - 1].map(v => (rand() < .3 ? !v : v)));
-      const d = p => Math.hypot(p.hx - W / 2, p.hy - H / 2);
-      hero = people.reduce((best, p, i) => (d(p) < d(people[best]) ? i : best), 0);
-      [false, true, false, true].forEach((v, k) => { member[k][hero] = v; });
-      sets = member.map(crowds);
+    const svg = document.createElementNS(SVGNS, 'svg');
+    svg.setAttribute('class', 'manuscript__lines');
+    text.append(svg);
 
-      segs = [];
-      const seg = (ax, ay, bx, by) => segs.push({ ax, ay, bx, by, at: 1.06 + rand() * .72, vx: (rand() - .5) * 1.6, vr: (rand() - .5) * 3 });
-      for (let r = 0; r <= rows; r++) for (let c = 0; c < cols; c++) seg(x0 + c * cell, y0 + r * cell, x0 + (c + 1) * cell, y0 + r * cell);
-      for (let c = 0; c <= cols; c++) for (let r = 0; r < rows; r++) seg(x0 + c * cell, y0 + r * cell, x0 + c * cell, y0 + (r + 1) * cell);
-      sprite = sprites();
-      sized = true;
+    let rows = 1, pens = [], visible = false;
+
+    function path(cls, d) {
+      const p = document.createElementNS(SVGNS, 'path');
+      p.setAttribute('class', cls);
+      p.setAttribute('d', d);
+      svg.append(p);
+      return p;
     }
 
-    // two crowds side by side: without a label on the left, with one on the right
-    function crowds(labels) {
-      const left = [], right = [];
-      labels.forEach((l, i) => (l ? right : left).push(i));
-      const aisle = cell * 2.6;                   // room on the line for the one who must choose
-      const ay = clamp(H / W * 1.5, .9, 2.4);     // tall crowds on a portrait screen
-      let gap = cell * .74, rl = 0, rr = 0;
-      for (let k = 0; k < 14; k++) {
-        rl = gap * Math.sqrt(left.length / (Math.PI * ay)) * 1.08;
-        rr = gap * Math.sqrt(right.length / (Math.PI * ay)) * 1.08;
-        if (2 * (rl + rr) + aisle + cell * .6 <= W && 2 * Math.max(rl, rr) * ay + cell <= H) break;
-        gap *= .92;
+    function layout() {
+      if (cjk) {
+        const avail = root.clientWidth - parseFloat(getComputedStyle(root).paddingLeft) * 2;
+        const cols = clamp(Math.floor(avail / 33), 8, 20);
+        const cell = Math.min(62, Math.floor(avail / cols));
+        text.style.setProperty('--cols', cols);
+        text.style.setProperty('--cell', `${cell}px`);
+        // a closing mark never starts a row: it hangs off the end of the one before
+        units.forEach(u => u.el.classList.remove('is-hang'));
+        for (let pass = 0; pass < 4; pass++) {
+          const i = units.findIndex((u, k) => k > 0 && u.hang && !u.el.classList.contains('is-hang') &&
+            u.el.offsetTop > units[k - 1].el.offsetTop);
+          if (i < 0) break;
+          units[i].el.classList.add('is-hang');
+        }
       }
-      const cl = (W - 2 * (rl + rr) - aisle) / 2 + rl;
-      const cr = cl + rl + aisle + rr;
-      const pos = new Array(people.length);
-      const place = (list, cx, R) => {
-        const dist = i => Math.hypot(people[i].hx - cx, people[i].hy - H / 2);
-        list.slice().sort((a, b) => dist(a) - dist(b)).forEach((i, k) => {
-          const rad = R * Math.sqrt((k + .5) / list.length), th = k * 2.39996;
-          pos[i] = [cx + rad * Math.cos(th), H / 2 + rad * Math.sin(th) * ay];
+
+      const W = text.clientWidth, H = text.clientHeight;
+      const tops = [...new Set(units.map(u => u.el.offsetTop))].sort((a, b) => a - b);
+      rows = tops.length;
+      const box = units.map(u => ({ x: u.el.offsetLeft, w: u.el.offsetWidth, y: u.el.offsetTop, h: u.el.offsetHeight }));
+      units.forEach((u, i) => {
+        u.row = tops.indexOf(box[i].y);
+        u.r = u.row + (box[i].x + box[i].w / 2) / Math.max(W, 1);
+      });
+
+      svg.replaceChildren();
+      svg.setAttribute('width', W);
+      svg.setAttribute('height', H);
+      svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+      const cell = cjk ? parseFloat(text.style.getPropertyValue('--cell')) : 0;
+      const pitch = cjk ? cell * 1.25 : (H / Math.max(rows, 1));
+      let d = '';
+      if (cjk) {
+        const cols = +text.style.getPropertyValue('--cols');
+        const w = cols * cell, n = Math.max(rows, Math.round(H / pitch));
+        for (let k = 0; k < n; k++) {
+          const y0 = Math.round(k * pitch) + .5, y1 = Math.round(k * pitch + cell) + .5;
+          d += `M0 ${y0}H${w}M0 ${y1}H${w}`;
+          for (let j = 0; j <= cols; j++) { const x = Math.round(j * cell) + .5; d += `M${x} ${y0}V${y1}`; }
+        }
+        path('grid', d);
+      } else {
+        const lh = parseFloat(getComputedStyle(text).lineHeight) || pitch;
+        for (let k = 0; k < rows; k++) { const y = Math.round(tops[k] + lh * .86) + .5; d += `M0 ${y}H${W}`; }
+        path('rule', d);
+      }
+
+      // red-pen underlines, one stroke per row of each marked phrase
+      const rand = mulberry32(1976);
+      pens = [];
+      for (let g = 1; g <= group; g++) {
+        const mine = units.map((u, i) => [u, box[i]]).filter(([u]) => u.gid === g);
+        const byRow = new Map();
+        mine.forEach(([u, b]) => { if (!byRow.has(u.row)) byRow.set(u.row, []); byRow.get(u.row).push([u, b]); });
+        byRow.forEach(list => {
+          const x0 = Math.min(...list.map(([, b]) => b.x)) + (cjk ? cell * .06 : 0);
+          const x1 = Math.max(...list.map(([, b]) => b.x + b.w)) - (cjk ? cell * .06 : 2);
+          const y = cjk ? list[0][1].y + cell * 1.1 : list[0][1].y + list[0][1].h * .94;
+          const wob = () => (rand() - .5) * (cjk ? cell * .08 : 4);
+          const p = path('pen', `M${(x0 - 3).toFixed(1)} ${(y + wob()).toFixed(1)}Q${((x0 + x1) / 2).toFixed(1)} ${(y + wob() * 1.6).toFixed(1)} ${x1.toFixed(1)} ${(y + wob()).toFixed(1)}`);
+          p.setAttribute('pathLength', '1');
+          pens.push({ el: p, from: list[list.length - 1][0].r, done: -1 });
         });
-      };
-      place(left, cl, rl); place(right, cr, rr);
-      pos.line = cl + rl + aisle / 2;
-      return pos;
-    }
-
-    function sprites() {
-      const px = Math.round(cell * .6 * dpr);
-      const glyph = (color, scale) => {
-        const s = Math.ceil(px * scale * 1.3);
-        const c = document.createElement('canvas'); c.width = c.height = s;
-        const g = c.getContext('2d');
-        g.fillStyle = color; g.textAlign = 'center'; g.textBaseline = 'middle';
-        g.font = `600 ${Math.round(px * scale)}px "Noto Serif TC", "Songti TC", serif`;
-        g.fillText('人', s / 2, s / 2 + px * scale * .04);
-        return { c, size: s / dpr };
-      };
-      const tag = (() => {                       // a small paper label
-        const w = Math.round(cell * .36 * dpr), h = Math.round(cell * .22 * dpr);
-        const c = document.createElement('canvas'); c.width = w + 4; c.height = h + 4;
-        const g = c.getContext('2d');
-        const n = h * .5;
-        g.fillStyle = RED;
-        g.beginPath(); g.moveTo(2 + n, 2); g.lineTo(2 + w, 2); g.lineTo(2 + w, 2 + h); g.lineTo(2 + n, 2 + h); g.lineTo(2, 2 + h / 2); g.closePath(); g.fill();
-        g.fillStyle = '#dbccba';
-        g.beginPath(); g.arc(2 + n * .8, 2 + h / 2, Math.max(1, h * .12), 0, 6.3); g.fill();
-        return { c, w: (w + 4) / dpr, h: (h + 4) / dpr };
-      })();
-      const seal = (() => {                      // a worn red seal
-        const s = Math.round(cell * 2.3 * dpr);
-        const c = document.createElement('canvas'); c.width = c.height = s;
-        const g = c.getContext('2d');
-        g.fillStyle = RED; roundRect(g, 0, 0, s, s, s * .06); g.fill();
-        g.strokeStyle = 'rgba(242, 227, 200, .9)'; g.lineWidth = s * .03;
-        roundRect(g, s * .09, s * .09, s * .82, s * .82, s * .04); g.stroke();
-        g.fillStyle = '#f2e3c8'; g.textAlign = 'center'; g.textBaseline = 'middle';
-        if (/^[\x00-\x7f]+$/.test(sealText)) {
-          g.font = `600 ${Math.round(s * .21)}px "EB Garamond", serif`;
-          g.fillText(sealText, s / 2, s / 2 + s * .01);
-        } else {
-          g.font = `900 ${Math.round(s * .33)}px "Noto Serif TC", serif`;
-          [...sealText].forEach((ch, k, all) => g.fillText(ch, s / 2, s / 2 + (k - (all.length - 1) / 2) * s * .35));
-        }
-        g.globalCompositeOperation = 'destination-out';
-        const r = mulberry32(7);
-        for (let k = 0; k < 110; k++) {
-          g.globalAlpha = r() * .55;
-          g.beginPath(); g.arc(r() * s, r() * s, r() * s * .022, 0, 6.3); g.fill();
-        }
-        return { c, size: s / dpr };
-      })();
-      return { ink: glyph(INK, 1), red: glyph(RED, 2.2), tag, seal };
-    }
-
-    function drawTag(x, y, rot, a, fall) {
-      const T = sprite.tag;
-      ctx.globalAlpha = a;
-      ctx.save(); ctx.translate(x, y - fall); ctx.rotate(rot * .5);
-      ctx.strokeStyle = `rgba(${RULE}, .75)`; ctx.lineWidth = .8;
-      ctx.beginPath(); ctx.moveTo(cell * .08, -cell * .12); ctx.lineTo(cell * .22, -cell * .3); ctx.stroke();
-      ctx.drawImage(T.c, cell * .2, -cell * .3 - T.h / 2, T.w, T.h);
-      ctx.restore();
-    }
-
-    function draw(t) {
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, W, H);
-      ctx.globalAlpha = 1;
-
-      // the ruled page: its lines darken, then break loose and fall
-      const firm = smoothstep(.25, .8, u), alpha = .2 + .45 * firm;
-      ctx.lineWidth = 1 + firm * .5;
-      ctx.strokeStyle = `rgba(${RULE}, ${alpha})`;
-      ctx.beginPath();
-      for (const s of segs) if (u < s.at) { ctx.moveTo(s.ax, s.ay); ctx.lineTo(s.bx, s.by); }
-      ctx.stroke();
-      for (const s of segs) {
-        const f = u - s.at;
-        if (f < 0 || f > .45) continue;
-        ctx.save();
-        ctx.translate((s.ax + s.bx) / 2 + s.vx * f * cell, (s.ay + s.by) / 2 + f * f * cell * 16);
-        ctx.rotate(s.vr * f);
-        ctx.strokeStyle = `rgba(${RULE}, ${alpha * (1 - f / .45)})`;
-        ctx.beginPath(); ctx.moveTo((s.ax - s.bx) / 2, (s.ay - s.by) / 2); ctx.lineTo((s.bx - s.ax) / 2, (s.by - s.ay) / 2); ctx.stroke();
-        ctx.restore();
       }
-
-      // the seal of power
-      const sealIn = smoothstep(.5, .64, u), sealOut = 1 - smoothstep(1.15, 1.5, u);
-      if (sealIn * sealOut > 0) {
-        const k = 1 + (1 - easeOutCubic(sealIn)) * .8, S = sprite.seal.size;
-        ctx.save(); ctx.translate(W * .68, H * .34); ctx.rotate(-.13); ctx.scale(k, k);
-        ctx.globalAlpha = .92 * sealIn * sealOut;
-        ctx.drawImage(sprite.seal.c, -S / 2, -S / 2, S, S);
-        ctx.restore();
-      }
-
-      // the dividing line, which moves every time the rules change
-      const loose = smoothstep(1.1, 1.9, u), split = smoothstep(2.35, 2.9, u);
-      const focus = smoothstep(3.02, 3.2, u), dim = smoothstep(3.55, 3.95, u);
-      const q = SWITCH.map(sw => smoothstep(sw, sw + .12, u));
-      let line = sets[0].line;
-      for (let k = 1; k < 4; k++) line = lerp(line, sets[k].line, q[k - 1]);
-      const reach = smoothstep(2.55, 2.9, u);
-      if (reach > 0) {
-        ctx.globalAlpha = 1;
-        ctx.strokeStyle = `rgba(${RULE}, .85)`; ctx.lineWidth = 1.6;
-        ctx.beginPath(); ctx.moveTo(line, H / 2 - H * .44 * reach); ctx.lineTo(line, H / 2 + H * .44 * reach); ctx.stroke();
-      }
-
-      // the people
-      const ink = sprite.ink, S = ink.size;
-      let hx = 0, hy = 0, htag = 0;
-      for (let i = 0; i < people.length; i++) {
-        const p = people[i];
-        const j = loose * cell * .07;
-        let x = p.hx + p.wx * loose + Math.sin(t * p.sp + p.ph) * j;
-        let y = p.hy + p.wy * loose + Math.cos(t * p.sp * 1.3 + p.ph) * j;
-        let rot = p.tilt * loose + Math.sin(t * .7 + p.ph) * .06 * loose;
-        let tag = 0;
-        if (u > p.drop) {
-          tag = member[0][i] ? 1 : 0;
-          for (let k = 1; k < 4; k++) tag = lerp(tag, member[k][i] ? 1 : 0, q[k - 1]);
-        }
-        if (split > 0) {
-          let [tx, ty] = sets[0][i];
-          for (let k = 1; k < 4; k++) { tx = lerp(tx, sets[k][i][0], q[k - 1]); ty = lerp(ty, sets[k][i][1], q[k - 1]); }
-          x = lerp(x, tx + Math.sin(t * p.sp + p.ph) * j * .5, split);
-          y = lerp(y, ty + Math.cos(t * p.sp + p.ph) * j * .5, split);
-          rot *= 1 - split * .5;
-        }
-        if (i === hero) { hx = lerp(x, line, focus); hy = lerp(y, H / 2, focus); htag = tag; rot *= 1 - focus; }
-        const drop = easeOutCubic(clamp((u - p.drop) / .14, 0, 1));
-        const marked = tag * smoothstep(2.3, 2.6, u);
-        if (i !== hero || focus < 1) {
-          ctx.globalAlpha = (1 - marked * .55) * (i === hero ? 1 - focus : 1 - dim * .5);
-          ctx.save(); ctx.translate(i === hero ? hx : x, i === hero ? hy : y); ctx.rotate(rot);
-          ctx.drawImage(ink.c, -S / 2, -S / 2, S, S);
-          ctx.restore();
-        }
-        if (tag > .01 && i !== hero) drawTag(x, y, rot, tag * drop * (1 - dim * .4), (1 - drop) * cell * 5);
-      }
-
-      // one person on the line, with two ways to go
-      if (focus > 0) {
-        const R = sprite.red, s = R.size * lerp(1 / 2.2, 1, focus);
-        ctx.globalAlpha = focus;
-        ctx.drawImage(R.c, hx - s / 2, hy - s / 2, s, s);
-        if (htag > .01) drawTag(hx + cell * .25, hy - cell * .05, 0, htag, 0);
-        const go = smoothstep(3.28, 3.5, u);
-        if (go > 0) {
-          ctx.globalAlpha = go * .9;
-          ctx.strokeStyle = RED; ctx.fillStyle = RED; ctx.lineWidth = 1.4;
-          for (const dir of [-1, 1]) {
-            const x1 = hx, y1 = hy - cell * .95;
-            const x2 = hx + dir * cell * lerp(.25, 1.05, go), y2 = hy - cell * lerp(1.2, 2.3, go);
-            const cx = hx + dir * cell * .08, cy = hy - cell * 1.75;
-            ctx.setLineDash([4, 5]);
-            ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(cx, cy, x2, y2); ctx.stroke();
-            ctx.setLineDash([]);
-            const a = Math.atan2(y2 - cy, x2 - cx), h = cell * .18;
-            ctx.beginPath(); ctx.moveTo(x2, y2);
-            ctx.lineTo(x2 - h * Math.cos(a - .45), y2 - h * Math.sin(a - .45));
-            ctx.lineTo(x2 - h * Math.cos(a + .45), y2 - h * Math.sin(a + .45));
-            ctx.closePath(); ctx.fill();
-          }
-        }
-      }
-      ctx.globalAlpha = 1;
-
-      const now = clamp(Math.floor(u + .08), 0, 3);
-      if (now !== step) { step = now; items.forEach((el, k) => el.classList.toggle('is-active', k === now)); }
-      bars.forEach((b, k) => b.style.setProperty('--fill', clamp(u - k, 0, 1).toFixed(3)));
-      if (torn) torn.style.setProperty('--tear', smoothstep(1.2, 1.85, u).toFixed(3));
+      units.forEach(u => { u.ink = -1; });
+      update();
     }
 
-    function tick(now) {
-      running = false;
-      if (!sized) build();
-      if (!sized) return;
-      const du = target - u;
-      u = Math.abs(du) < .0005 ? target : u + du * .12;
-      draw((now - t0) / 1000);
-      // keep breathing while the crowd is loose; rest once the page is still
-      if (visible && (u !== target || u > 1.08)) { running = true; requestAnimationFrame(tick); }
+    // the writing front moves one row for every ~1.5 rows of scrolling
+    function update() {
+      if (!visible && !reduceMotion) return;
+      const rect = text.getBoundingClientRect();
+      const rowPx = rect.height / Math.max(rows, 1);
+      const F = reduceMotion ? rows + 3 : (window.innerHeight * .84 - rect.top) / (rowPx * 1.5);
+      const soft = cjk ? .22 : .16;
+      units.forEach(u => {
+        const ink = Math.round(clamp((F - u.r) / soft, 0, 1) * 50) / 50;
+        if (ink !== u.ink) { u.ink = ink; u.el.style.setProperty('--ink', ink); }
+      });
+      pens.forEach(p => {
+        const k = Math.round(clamp((F - p.from - .08) / .3, 0, 1) * 100) / 100;
+        if (k !== p.done) { p.done = k; p.el.style.strokeDashoffset = String(1 - k); }
+      });
     }
-    const kick = () => { if (!running) { running = true; requestAnimationFrame(tick); } };
 
-    function onScroll() {
-      const r = root.getBoundingClientRect();
-      target = clamp((-r.top / Math.max(r.height - window.innerHeight, 1)) * 4.15 - .08, 0, 4);
-      if (visible) kick();
-    }
-
-    new IntersectionObserver(([en]) => {
-      visible = en.isIntersecting;
-      if (visible) { onScroll(); kick(); }
-    }).observe(root);
-    if (document.fonts && document.fonts.load) {
-      Promise.all([
-        document.fonts.load('600 40px "Noto Serif TC"', '人權力'),
-        document.fonts.load('600 40px "EB Garamond"', 'POWER')
-      ]).catch(() => {}).then(() => { sized = false; kick(); });
-    }
-    return { scroll: onScroll, resize() { sized = false; onScroll(); kick(); } };
+    new IntersectionObserver(([en]) => { visible = en.isIntersecting; update(); }, { rootMargin: '20% 0px' }).observe(root);
+    layout();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
+    return { scroll: update, resize: layout };
   }
 
   /* ------------------------------------------------------------
@@ -922,7 +770,7 @@
   const hero = initHero();
   initReveal();
   const timeline = initTimeline();
-  const concerns = initConcerns();
+  const manuscript = initManuscript();
   const reel = initReel();
   initLectures();
   initMenu();
@@ -938,7 +786,7 @@
     ticking = false;
     if (hero) hero.scroll();
     if (timeline) timeline.scroll();
-    if (concerns) concerns.scroll();
+    if (manuscript) manuscript.scroll();
     if (reel) reel.scroll();
     const heroP = hero ? hero.progress() : 1;
     header.classList.toggle('is-solid', heroP > .5);
@@ -951,7 +799,7 @@
   window.addEventListener('resize', () => {
     if (hero) hero.resize();
     if (timeline) timeline.resize();
-    if (concerns) concerns.resize();
+    if (manuscript) manuscript.resize();
     request();
   });
   frame();

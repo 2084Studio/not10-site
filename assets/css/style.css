@@ -548,106 +548,70 @@ html:not(.js) .tl-after, html:not(.js) .tl-origin, html:not(.js) .tl-trace { opa
 
 /* ==========================================================
    4 · WHAT THE BOOK ASKS
-   Without JS (or with reduced motion) the four questions are a
-   simple list. With JS the list pins and a canvas tells the story:
-   a page of 人 on manuscript paper, stamped by power, loosened
-   from its rules, divided by labels — one person left to choose.
+   The author's sentence, written onto manuscript paper as the
+   reader scrolls (main.js sets --ink on each character or word
+   and draws the grid and the red-pen marks in an SVG).
+   Without JS it is simply the sentence, with the same marks.
    ========================================================== */
 
-.concerns { padding-top: clamp(100px, 16vh, 180px); }
-.concerns__intro { margin-bottom: clamp(20px, 5vh, 56px); }
-.concerns__intro .display { margin-bottom: 0; }
-.concerns__scroll { position: relative; }
-.concerns__stage {
-  max-width: calc(var(--wrap) + var(--gutter) * 2);
-  margin-inline: auto;
-  padding: 0 var(--gutter) clamp(90px, 14vh, 150px);
-  display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-  gap: clamp(24px, 5vw, 80px); align-items: center;
+.concerns { padding-block: clamp(110px, 18vh, 200px); }
+.manuscript {
+  position: relative;
+  margin-top: clamp(8px, 2vh, 20px);
+  padding: clamp(22px, 4.2vw, 60px);
+  background: linear-gradient(rgba(255, 251, 242, .55), rgba(255, 251, 242, .55)), var(--bg-cream);
+  box-shadow: 0 34px 60px -28px rgba(60, 20, 10, .45), 0 2px 5px rgba(60, 20, 10, .12);
 }
-.concerns__art { display: none; }
-.concerns__text { grid-column: 1 / -1; }
-.concerns__list {
-  list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px 56px;
-}
-.concern__no {
-  display: block;
-  font-size: .8rem; letter-spacing: .24em; font-weight: 600;
-  color: var(--red); font-variant-numeric: lining-nums;
-}
-.concern__no small { font-size: inherit; color: var(--muted); }
-.concern__word {
-  font-size: clamp(3rem, 7vw, 6.4rem); line-height: 1.05; letter-spacing: .04em;
-  margin: .12em 0 .22em;
-}
-.concern__word:lang(en) { font-weight: 600; letter-spacing: -.015em; }
-.concern__line {
-  margin: 0; max-width: 21em;
-  font-size: clamp(1.05rem, 1.45vw, 1.32rem); color: var(--ink-soft);
+.manuscript__text {
+  position: relative; margin: 0;
+  font-size: clamp(1.45rem, 2.9vw, 2.5rem); line-height: 1.75; font-weight: 600;
   text-wrap: pretty;
 }
-.concerns__progress { display: none; }
-
-.concerns__scroll.is-live { height: 440vh; }
-.is-live .concerns__stage {
-  position: sticky; top: 0;
-  height: 100vh; height: 100svh;
-  padding-top: 84px; padding-bottom: 70px;
-}
-.is-live .concerns__art {
-  display: block; position: relative;
-  grid-column: 2; grid-row: 1;
-  height: min(74svh, 700px);
-}
-.is-live .concerns__art canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-.is-live .concerns__text { grid-column: 1; grid-row: 1; }
-.is-live .concerns__list { display: block; position: relative; min-height: 20rem; }
-.is-live .concern {
-  position: absolute; inset: 0 0 auto;
-  opacity: 0; transform: translateY(24px);
-  transition: opacity .6s var(--ease), transform .8s var(--ease);
-  pointer-events: none;
-}
-.is-live .concern.is-active { opacity: 1; transform: none; }
-.is-live .concerns__progress { display: flex; gap: 8px; margin-top: 8px; }
-.concerns__progress i { position: relative; width: 44px; height: 2px; background: rgba(27, 22, 19, .15); overflow: hidden; }
-.concerns__progress i::after {
-  content: ""; position: absolute; inset: 0;
-  background: var(--red);
-  transform-origin: 0 50%; transform: scaleX(var(--fill, 0));
+.manuscript__text:lang(en) { font-weight: 500; line-height: 1.55; font-size: clamp(1.45rem, 2.7vw, 2.35rem); }
+.manuscript__text [data-mark="red"] { color: var(--red); }
+.manuscript__text [data-mark="grey"] { color: var(--muted); }
+.manuscript__text [data-mark="title"] { font-style: italic; }
+.manuscript__text [data-mark="line"] {
+  text-decoration: underline 2px var(--red);
+  text-underline-offset: .32em; text-decoration-skip-ink: none;
 }
 
-/* 革命 tears along its middle while the rules break */
-.concern__word[data-tear] { position: relative; }
-.is-live .concern__word[data-tear] { color: transparent; }
-.is-live .concern__word[data-tear]::before,
-.is-live .concern__word[data-tear]::after {
-  content: attr(data-tear);
-  position: absolute; left: 0; top: 0;
-  color: var(--ink);
+.manuscript__text.is-set .u {
+  opacity: var(--ink, 0);
+  transform: translateY(calc((1 - var(--ink, 0)) * .12em));
 }
-.is-live .concern__word[data-tear]::before {
-  clip-path: polygon(0 0, 100% 0, 100% 44%, 86% 50%, 71% 45%, 55% 53%, 38% 46%, 22% 52%, 8% 47%, 0 51%);
-  transform: translate(calc(var(--tear, 0) * -.06em), calc(var(--tear, 0) * -.05em)) rotate(calc(var(--tear, 0) * -2deg));
-}
-.is-live .concern__word[data-tear]::after {
-  clip-path: polygon(0 51%, 8% 47%, 22% 52%, 38% 46%, 55% 53%, 71% 45%, 86% 50%, 100% 44%, 100% 100%, 0 100%);
-  transform: translate(calc(var(--tear, 0) * .07em), calc(var(--tear, 0) * .06em)) rotate(calc(var(--tear, 0) * 1.4deg));
+.manuscript__text.is-set .u[data-m="grey"] { color: var(--muted); opacity: calc(var(--ink, 0) * .62); }
+.manuscript__text.is-set .u[data-m="red"] { color: var(--red); }
+.manuscript__text.is-set .u[data-m="title"] { font-style: italic; }
+.manuscript__text:lang(en).is-set .u { display: inline-block; }
+.manuscript__lines { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+.manuscript__lines .grid { fill: none; stroke: rgba(125, 3, 5, .3); stroke-width: 1; shape-rendering: crispEdges; }
+.manuscript__lines .rule { fill: none; stroke: rgba(27, 22, 19, .12); stroke-width: 1; shape-rendering: crispEdges; }
+.manuscript__lines .pen {
+  fill: none; stroke: var(--red); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 1 1;
 }
 
-@media (max-width: 860px) {
-  .concerns__list { grid-template-columns: 1fr; gap: 36px; }
-  .is-live .concerns__stage {
-    grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto;
-    align-items: stretch; gap: 14px;
-    padding-top: 70px; padding-bottom: 30px;
-  }
-  .is-live .concerns__art { grid-column: 1; grid-row: 1; height: auto; min-height: 0; }
-  .is-live .concerns__text { grid-column: 1; grid-row: 2; }
-  .is-live .concerns__list { min-height: 11rem; }
-  .concern__word { font-size: clamp(2.5rem, 12vw, 3.6rem); }
-  .concern__line { font-size: 1rem; }
+/* Chinese: one character to a square, as on 稿紙 */
+.manuscript.is-grid .manuscript__text {
+  width: calc(var(--cols) * var(--cell));
+  margin-inline: auto;
+  font-size: var(--cell); line-height: calc(var(--cell) * 1.25);
+}
+.manuscript.is-grid .u {
+  display: inline-flex; width: 1em; height: 1em;
+  align-items: center; justify-content: center; vertical-align: top;
+  font-size: .78em;
+  width: calc(1em / .78); height: calc(1em / .78);
+}
+.manuscript.is-grid .u.is-hang { width: 0; justify-content: flex-start; }
+
+/* English: ruled paper with a red margin line */
+.manuscript.is-ruled { padding-left: clamp(44px, 7vw, 96px); }
+.manuscript.is-ruled::before {
+  content: ""; position: absolute; top: 0; bottom: 0;
+  left: clamp(26px, 4.4vw, 62px); width: 1px;
+  background: rgba(125, 3, 5, .45);
 }
 
 /* ==========================================================
