@@ -780,18 +780,31 @@
     const root = document.querySelector('[data-animation]');
     if (!root) return null;
     const rows = [...root.querySelectorAll('.reel__row')];
-    const released = [...root.querySelectorAll('.reel__frame')].filter(f => (f.dataset.video || '').trim());
-    released.forEach(f => {
-      const id = f.dataset.video.trim();
-      const title = f.querySelector('.reel__ch').textContent;
-      f.classList.add('is-out');
-      f.style.backgroundImage = `url("https://i.ytimg.com/vi/${encodeURIComponent(id)}/hqdefault.jpg")`;
-      f.tabIndex = 0;
-      f.setAttribute('role', 'button');
-      const open = () => openVideo(id, title, root.dataset.close);
-      f.addEventListener('click', open);
-      f.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+    // every episode has a Chinese and an English version: data-zh / data-en hold the YouTube IDs
+    const frames = [...root.querySelectorAll('.reel__frame')];
+    const tabs = [...root.querySelectorAll('[data-reel-lang]')];
+    let lang = (tabs.find(t => t.getAttribute('aria-selected') === 'true') || {}).dataset?.reelLang || 'zh';
+    const idOf = f => (f.dataset[lang] || '').trim();
+    function open(f) {
+      const id = idOf(f);
+      if (id) openVideo(id, f.querySelector('.reel__ch').textContent, root.dataset.close);
+    }
+    function apply() {
+      frames.forEach(f => {
+        const id = idOf(f);
+        f.classList.toggle('is-out', !!id);
+        f.style.backgroundImage = id ? `url("https://i.ytimg.com/vi/${encodeURIComponent(id)}/hqdefault.jpg")` : '';
+        if (id) { f.tabIndex = 0; f.setAttribute('role', 'button'); }
+        else { f.removeAttribute('tabindex'); f.removeAttribute('role'); }
+      });
+      tabs.forEach(t => t.setAttribute('aria-selected', String(t.dataset.reelLang === lang)));
+    }
+    frames.forEach(f => {
+      f.addEventListener('click', () => open(f));
+      f.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && idOf(f)) { e.preventDefault(); open(f); } });
     });
+    tabs.forEach(t => t.addEventListener('click', () => { lang = t.dataset.reelLang; apply(); }));
+    apply();
     const wide = window.matchMedia('(min-width: 861px)');
     function onScroll() {
       if (reduceMotion || !wide.matches) return;
