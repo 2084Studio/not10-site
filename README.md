@@ -30,6 +30,8 @@ CNAME                   custom domain for GitHub Pages
   `pip install pillow numpy scipy && python3 tools/build_assets.py`. If the cover art itself changes,
   also run `python3 tools/build_hero.py` and copy the geometry it prints into `ART` in `assets/js/main.js`.
 - **Author page**: links to https://beijing.2084studio.com/ (hero author name and the contact section).
+- **Timeline**: each earlier campaign is a `.tl-mark.tl-pre` in the timeline markup (`data-year`, plus `data-to`
+  for a span of years). Label rows are worked out automatically; 「今天」 always shows the current year.
 - **Lecture series (28 講)**: put the YouTube playlist ID (the `list=` value of the playlist URL) in
   `data-playlist` on `<section id="lectures">`, and the lecture titles in the `lectures__title` spans.
   A `data-video` on a lecture button plays that exact video instead of the playlist position.

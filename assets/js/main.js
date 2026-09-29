@@ -196,76 +196,137 @@
   }
 
   /* ------------------------------------------------------------
-     Timeline: the ten years zoom out
+     Timeline. The camera starts on the familiar ten years, pulls
+     back to show what came before 1966, then pans on past 1976 to
+     today and beyond. Labels are given rows so that none overlap.
      ------------------------------------------------------------ */
   function initTimeline() {
     const tl = document.querySelector('[data-timeline]');
     if (!tl) return null;
     const track = tl.querySelector('[data-track]');
     const decade = tl.querySelector('[data-decade]');
-    const after = tl.querySelector('[data-after]');
+    const decadeLabel = decade.querySelector('.tl-decade__label');
     const origin = tl.querySelector('.tl-origin');
     const trace = tl.querySelector('.tl-trace');
-    const caps = tl.querySelectorAll('.timeline__caption');
+    const future = tl.querySelector('.tl-future');
+    const caps = [...tl.querySelectorAll('.timeline__caption')];
+
+    const NOW = new Date().getFullYear();
+    tl.querySelectorAll('[data-now]').forEach(el => { el.dataset.year = NOW; });
+    tl.querySelectorAll('[data-now-year]').forEach(el => { el.textContent = NOW; });
+    tl.querySelectorAll('[data-note]').forEach(el => { el.dataset.year = (1976 + NOW) / 2; });
+    tl.querySelectorAll('[data-q]').forEach(el => { el.dataset.year = NOW + 7; });
+
     const marks = [...tl.querySelectorAll('.tl-mark')].map(el => ({
-      el, year: +el.dataset.year,
+      el,
+      from: +el.dataset.year, to: +(el.dataset.to || el.dataset.year),
       label: el.querySelector('.tl-label'),
-      fixed: el.classList.contains('tl-mark--fixed'),
+      span: el.querySelector('.tl-span'),
+      kind: el.classList.contains('tl-pre') ? 'pre' : el.classList.contains('tl-post') ? 'post' : 'fixed',
+      q: el.hasAttribute('data-q'),
       lw: 0
     }));
-    const D0 = [1963.2, 1978.8], D1 = [1938, 1988];
-    let W = 0;
+    const mid = m => (m.from + m.to) / 2;
+
+    // [scroll progress, first year, last year] — eased between
+    const LONG = [1939, 1979.5];
+    const KEYS = [[0, 1963.5, 1978.5], [.12, 1963.5, 1978.5], [.42, ...LONG], [.55, ...LONG], [.82, 1968, NOW + 10], [1, 1968, NOW + 10]];
+    function view(p) {
+      for (let i = 1; i < KEYS.length; i++) {
+        const [p0, a0, b0] = KEYS[i - 1], [p1, a1, b1] = KEYS[i];
+        if (p <= p1) {
+          const t = easeInOut(clamp((p - p0) / (p1 - p0), 0, 1));
+          return [lerp(a0, a1, t), lerp(b0, b1, t)];
+        }
+      }
+      return KEYS[KEYS.length - 1].slice(1);
+    }
+
+    let W = 0, gutter = 0;
 
     function measure() {
       W = track.clientWidth;
-      marks.forEach(m => { m.lw = m.label.offsetWidth; });
+      gutter = track.getBoundingClientRect().left;
+      marks.forEach(m => { m.lw = m.label ? m.label.offsetWidth : 0; });
+      assignRows();
+    }
+
+    // rows are worked out for the long view, where every earlier campaign is on screen
+    function assignRows() {
+      const X = y => (y - LONG[0]) / (LONG[1] - LONG[0]) * W;
+      const rows = { a1: [], b1: [], a2: [], b2: [], a3: [], b3: [], a4: [], b4: [] };
+      const pad = 12;
+      const overlap = (row, lo, hi) => rows[row].reduce((sum, [l, h]) => sum + Math.max(0, Math.min(hi + pad, h + pad) - Math.max(lo, l)), 0);
+      const dw = decadeLabel.offsetWidth;
+      const dl = Math.min((X(1966) + X(1976)) / 2 - dw / 2, W - dw);
+      rows.a1.push([dl, dl + dw]);
+      marks.filter(m => m.kind === 'fixed').forEach(m => rows.b1.push([X(m.from) - m.lw / 2, X(m.from) + m.lw / 2]));
+      marks.filter(m => m.kind === 'pre').sort((m, n) => mid(m) - mid(n)).forEach(m => {
+        let lo = X(mid(m)) - m.lw / 2;
+        lo = clamp(lo, 0, Math.max(0, W - m.lw));
+        const hi = lo + m.lw;
+        const names = Object.keys(rows);
+        const row = names.find(r => overlap(r, lo, hi) === 0) ||
+          names.reduce((best, r) => (overlap(r, lo, hi) < overlap(best, lo, hi) ? r : best), names[0]);
+        rows[row].push([lo, hi]);
+        m.el.dataset.lane = row;
+      });
     }
 
     function render(p) {
-      const t = easeInOut(clamp((p - .16) / .52, 0, 1));
-      const d0 = lerp(D0[0], D1[0], t), d1 = lerp(D0[1], D1[1], t);
+      const [d0, d1] = view(p);
       const X = y => (y - d0) / (d1 - d0) * W;
+      const pre = smoothstep(.12, .3, p) * (1 - smoothstep(.56, .64, p)), post = smoothstep(.6, .78, p);
 
       marks.forEach(m => {
-        const x = X(m.year);
+        const x = X(mid(m));
         m.el.style.transform = `translate3d(${x.toFixed(1)}px,0,0)`;
-        const lo = x - m.lw / 2;
-        const shift = clamp(lo, 0, Math.max(0, W - m.lw)) - lo;
-        m.label.style.transform = `translateX(calc(-50% + ${shift.toFixed(1)}px))`;
-        if (!m.fixed) {
-          const inside = clamp(Math.min(x, W - x) / (W * .05), 0, 1);
-          m.el.style.opacity = String(inside * smoothstep(.02, .3, t));
+        if (m.span) m.span.style.width = `${Math.max(2, X(m.to) - X(m.from)).toFixed(1)}px`;
+        if (m.label && !m.q) {
+          const lo = x - m.lw / 2;
+          const shift = clamp(lo, -gutter * .5, Math.max(0, W - m.lw)) - lo;
+          m.label.style.transform = `translateX(calc(-50% + ${shift.toFixed(1)}px))`;
         }
+        const edge = clamp(Math.min(x + gutter * .6, W + gutter * .6 - x) / (W * .06), 0, 1);
+        const show = m.kind === 'pre' ? pre : m.kind === 'post' ? post : 1;
+        m.el.style.opacity = String(edge * show);
       });
 
-      const x66 = X(1966), x76 = X(1976);
-      decade.style.left = x66 + 'px';
-      decade.style.width = (x76 - x66) + 'px';
-      origin.style.left = X(1942) + 'px';
-      origin.style.width = Math.max(0, x66 - X(1942)) + 'px';
-      origin.style.opacity = String(smoothstep(.35, .9, t));
-      trace.style.left = x76 + 'px';
-      trace.style.opacity = String(smoothstep(.45, 1, t));
-      after.style.opacity = String(smoothstep(.6, 1, t));
+      const x66 = X(1966), x76 = X(1976), xNow = X(NOW);
+      decade.style.left = `${x66}px`;
+      decade.style.width = `${x76 - x66}px`;
+      // the decade's own label stays on screen at the right, and fades out at the left
+      const dw = decadeLabel.offsetWidth, dlo = (x66 + x76) / 2 - dw / 2;
+      const dshift = Math.min(0, W + gutter * .4 - dw - dlo);
+      decadeLabel.style.transform = `translateX(calc(-50% + ${dshift.toFixed(1)}px))`;
+      decadeLabel.style.opacity = String(clamp((dlo + dshift + gutter) / 40, 0, 1));
+      origin.style.left = `${X(1942)}px`;
+      origin.style.width = `${Math.max(0, x66 - X(1942))}px`;
+      origin.style.opacity = String(smoothstep(.28, .42, p));
+      trace.style.left = `${x76}px`;
+      trace.style.width = `${Math.max(0, xNow - x76)}px`;
+      trace.style.opacity = String(smoothstep(.56, .7, p));
+      future.style.left = `${xNow}px`;
+      future.style.opacity = String(smoothstep(.68, .84, p));
 
-      const stage = p < .3 ? 0 : 1;
+      const stage = p < .12 ? 0 : p < .57 ? 1 : 2;
       caps.forEach((c, i) => c.classList.toggle('is-active', i === stage));
-      tl.classList.toggle('is-not', p > .74);
+      tl.classList.toggle('is-not', p > .4);
     }
 
     function onScroll() {
       if (reduceMotion) return;
       const r = tl.getBoundingClientRect();
-      const range = r.height - window.innerHeight;
-      render(clamp(-r.top / Math.max(range, 1), 0, 1));
+      render(clamp(-r.top / Math.max(r.height - window.innerHeight, 1), 0, 1));
     }
 
+    const redraw = () => (reduceMotion ? render(.5) : onScroll());
     measure();
-    if (reduceMotion) { render(1); caps.forEach(c => c.classList.add('is-active')); }
-    else onScroll();
+    redraw();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { measure(); redraw(); });
 
     return {
-      resize() { measure(); reduceMotion ? render(1) : onScroll(); },
+      resize() { measure(); redraw(); },
       scroll: onScroll
     };
   }
