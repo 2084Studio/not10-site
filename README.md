@@ -1,6 +1,6 @@
 # 文革非十年 · Not Ten Years: The Cultural Revolution
 
-Official site for the book by 北靜 (Bei.Jing) — https://culturalrevolution.2084studio.com
+Official site (Not10) for the book by 北靜 (Bei.Jing) — https://not10.2084studio.com
 
 A static site with no build step: plain HTML, CSS and JavaScript, served by GitHub Pages.
 
@@ -53,7 +53,7 @@ Then open http://localhost:8000 (Chinese) and http://localhost:8000/en/ (English
 
 1. Repository **Settings → Pages → Build and deployment**: Source = *Deploy from a branch*,
    Branch = `main`, folder `/ (root)`.
-2. Custom domain: `culturalrevolution.2084studio.com` (already set in `CNAME`), then tick **Enforce HTTPS**
+2. Custom domain: `not10.2084studio.com` (already set in `CNAME`), then tick **Enforce HTTPS**
    once the certificate is issued.
 3. DNS at the registrar for `2084studio.com`: add a `CNAME` record
-   `culturalrevolution` → `2084studio.github.io`.
+   `not10` → `2084studio.github.io`.
