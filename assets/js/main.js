@@ -701,7 +701,7 @@
     const list = (root.dataset.playlist || '').trim();
     const player = root.querySelector('[data-lecture-player]');
     const poster = root.querySelector('[data-lecture-play]');
-    const no = root.querySelector('[data-lecture-no]');
+    const cover = root.querySelector('[data-lecture-cover]');
     const label = root.querySelector('[data-lecture-label]');
     const buttons = [...root.querySelectorAll('[data-lecture]')];
     const link = root.querySelector('[data-playlist-link]');
@@ -734,7 +734,7 @@
     function select(i) {
       current = i;
       buttons.forEach((b, k) => (k === i ? b.setAttribute('aria-current', 'true') : b.removeAttribute('aria-current')));
-      no.textContent = String(i + 1).padStart(2, '0');
+      cover.src = buttons[i].dataset.cover;
       label.textContent = buttons[i].dataset.label;
       play(i);
     }
